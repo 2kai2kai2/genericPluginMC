@@ -1,0 +1,13 @@
+name: GenericPlugin
+main: genericPluginMC.GenericPlugin
+version: 1.0
+author: 2kai2kai2
+prefix: GenericMC
+commands:
+  faction:
+    description: All player faction control commands for the GenericPlugin.
+    usage: "Usage: /<command> <create|join|role>"
+    default: true
+  claim:
+    description: All player claim commands
+    usage: "Usage: /<command> <new|requestDev|expand> [name]"
