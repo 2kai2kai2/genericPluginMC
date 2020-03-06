@@ -6,7 +6,7 @@ prefix: GenericMC
 commands:
   faction:
     description: All player faction control commands for the GenericPlugin.
-    usage: "Usage: /<command> <create|join|role>"
+    usage: "Usage: /<command> <create|join|leave|role>"
     default: true
   claim:
     description: All player claim commands

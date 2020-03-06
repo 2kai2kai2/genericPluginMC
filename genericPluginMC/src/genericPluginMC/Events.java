@@ -17,22 +17,23 @@ public class Events implements Listener {
 			FactionMember member = playerFaction.getMember(event.getPlayer().getUniqueId());
 			FactionRole topRole = member.topRole();
 			event.getPlayer().setDisplayName(topRole.getPrefix() + event.getPlayer().getName() + topRole.getPostfix());
-			event.getPlayer().setPlayerListName(topRole.getPrefix() + event.getPlayer().getName() + topRole.getPostfix());
-			event.setJoinMessage(topRole.getPrefix() + event.getPlayer().getName() + topRole.getPostfix() + " joined the game.");
+			event.getPlayer()
+					.setPlayerListName(topRole.getPrefix() + event.getPlayer().getName() + topRole.getPostfix());
+			event.setJoinMessage(
+					topRole.getPrefix() + event.getPlayer().getName() + topRole.getPostfix() + " joined the game.");
 		} else {
 			event.getPlayer().setDisplayName(event.getPlayer().getName() + " the Homeless");
 			event.getPlayer().setPlayerListName(event.getPlayer().getName() + " the Homeless");
 			event.setJoinMessage(event.getPlayer().getName() + " the Homeless joined the game.");
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		// If they just moved to a new chunk
 		if (event.getFrom().getChunk() != event.getTo().getChunk()) {
-			event.getPlayer().sendMessage("Crossed into chunk " + event.getTo().getChunk().getX() + ", " + event.getTo().getChunk().getZ());
-
-
+			event.getPlayer().sendMessage(
+					"Crossed into chunk " + event.getTo().getChunk().getX() + ", " + event.getTo().getChunk().getZ());
 		}
 	}
 }

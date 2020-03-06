@@ -21,7 +21,7 @@ public class Claim {
 		}
 		return null;
 	}
-	
+
 	private Faction owner;
 	private ArrayList<Chunk> chunks;
 
