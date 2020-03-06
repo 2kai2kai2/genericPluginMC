@@ -3,8 +3,6 @@ package factionsManager.dataTypes;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.bukkit.OfflinePlayer;
-
 public class FactionMember {
 	
 	private UUID player;

@@ -3,6 +3,7 @@ package genericPluginMC;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import factionsManager.dataTypes.Faction;
@@ -22,6 +23,10 @@ public class GenericPlugin extends JavaPlugin {
 			}
 		}
 		return null;
+	}
+	
+	public static Faction getPlayerFaction(Player player) {
+		return getPlayerFaction(player.getUniqueId());
 	}
 	
 	@Override

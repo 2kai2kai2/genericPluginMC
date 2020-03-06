@@ -12,8 +12,17 @@ public class FactionCommands implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		
 		if (label.equals("faction")) {
 			if (sender instanceof HumanEntity) {
+				// Get the player object
+				Player player = null;
+				for (Player p : ((HumanEntity) sender).getWorld().getPlayers()) {
+					if (p.getUniqueId().compareTo(((HumanEntity) sender).getUniqueId()) == 0) {
+						player = p;
+					}
+				}
+				
 				if (args.length == 0) {
 					return false; // Doesn't have any arguments
 				} else {
@@ -22,7 +31,7 @@ public class FactionCommands implements CommandExecutor {
 												// multi-word faction name
 
 							// Check if the player is already in a faction
-							if (GenericPlugin.getPlayerFaction(((HumanEntity) sender).getUniqueId()) != null) {
+							if (GenericPlugin.getPlayerFaction(player) != null) {
 								sender.sendMessage("You cannot be in a faction if you want to create a new one.");
 								return true;
 							}
@@ -47,13 +56,9 @@ public class FactionCommands implements CommandExecutor {
 							
 							Faction faction = new Faction(((HumanEntity) sender).getUniqueId(), factionName);
 							GenericPlugin.factions.add(faction);
-							for (Player p : ((HumanEntity) sender).getWorld().getPlayers()) {
-								if (p.getUniqueId().compareTo(((HumanEntity) sender).getUniqueId()) == 0) {
-									p.setDisplayName(faction.getMember(p.getUniqueId()).topRole().getPrefix() + p.getName() + faction.getMember(p.getUniqueId()).topRole().getPostfix());
-									p.setPlayerListName(faction.getMember(p.getUniqueId()).topRole().getPrefix() + p.getName() + faction.getMember(p.getUniqueId()).topRole().getPostfix());
+							player.setDisplayName(faction.getMember(player.getUniqueId()).topRole().getPrefix() + player.getName() + faction.getMember(player.getUniqueId()).topRole().getPostfix());
+							player.setPlayerListName(faction.getMember(player.getUniqueId()).topRole().getPrefix() + player.getName() + faction.getMember(player.getUniqueId()).topRole().getPostfix());
 
-								}
-							}
 							sender.sendMessage("Created new faction: " + factionName);
 							return true;
 							
@@ -61,7 +66,7 @@ public class FactionCommands implements CommandExecutor {
 					} else if (args[0].equals("join")) {
 						if (args.length > 1) {
 							// Check if the player is already in a faction
-							if (GenericPlugin.getPlayerFaction(((HumanEntity) sender).getUniqueId()) != null) {
+							if (GenericPlugin.getPlayerFaction(player) != null) {
 								sender.sendMessage("You cannot be in a faction if you want to join a different one.");
 								return true;
 							}
@@ -77,20 +82,7 @@ public class FactionCommands implements CommandExecutor {
 							for (Faction f : GenericPlugin.factions) {
 								if (f.getName().equalsIgnoreCase(factionName)) {
 									// TODO: Make this be a request rather than just joining
-									Player player = null;
-									for (Player p : ((HumanEntity) sender).getWorld().getPlayers()) {
-										if (p.getUniqueId().compareTo(((HumanEntity) sender).getUniqueId()) == 0) {
-											player = p;
-										}
-									}
-									if (player != null) {
-										f.addPlayer(player);
-										sender.sendMessage("Joined faction: " + factionName);
-										return true;
-									} else {
-										return false; // Something went terribly wrong. Let's just ignore it.
-									}
-									
+									f.addPlayer(player);
 								}
 							}
 							// This means that the faction wasn't recognized
@@ -102,17 +94,8 @@ public class FactionCommands implements CommandExecutor {
 						}
 					} else if (args[0].equals("leave")) {
 						if (args.length == 1) {
-							Player player = null;
-							for (Player p : ((HumanEntity) sender).getWorld().getPlayers()) {
-								if (p.getUniqueId().compareTo(((HumanEntity) sender).getUniqueId()) == 0) {
-									player = p;
-								}
-							}
-							if (player != null) {
-								GenericPlugin.getPlayerFaction(((HumanEntity) sender).getUniqueId()).removePlayer(player);
-							} else {
-								return false; // Something went terribly wrong. Let's just ignore it.
-							}
+							GenericPlugin.getPlayerFaction(player).removePlayer(player);
+							sender.sendMessage("Left faction: " + GenericPlugin.getPlayerFaction(player).getName());
 						} else {
 							sender.sendMessage("Too many arguments. Did you mean \"/faction leave\"?");
 							return true;

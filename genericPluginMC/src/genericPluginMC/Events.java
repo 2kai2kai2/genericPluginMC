@@ -31,11 +31,7 @@ public class Events implements Listener {
 		// If they just moved to a new chunk
 		if (event.getFrom().getChunk() != event.getTo().getChunk()) {
 			event.getPlayer().sendMessage("Crossed into chunk " + event.getTo().getChunk().getX() + ", " + event.getTo().getChunk().getZ());
-			if (event.getPlayer().isSneaking()) {
-				GenericPlugin.factions.add(new Faction(event.getPlayer().getUniqueId(), "hi"));
-			} else {
-				
-			}
+
 
 		}
 	}
