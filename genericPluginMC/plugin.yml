@@ -10,4 +10,5 @@ commands:
     default: true
   claim:
     description: All player claim commands
-    usage: "Usage: /<command> <new|requestDev|expand> [name]"
+    usage: "Usage: /<command> <new|delete|chunk|unchunk|devrequest> [name]"
+    default: true

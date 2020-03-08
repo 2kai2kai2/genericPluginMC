@@ -49,7 +49,7 @@ public class FactionMember {
 
 	public boolean canGiveRole() {
 		for (FactionRole role : getRoles()) {
-			if (role.isRoleGive())
+			if (role.isRoleGive() || role.isLeader())
 				return true;
 		}
 		return false;
@@ -57,7 +57,7 @@ public class FactionMember {
 
 	public boolean canControlRole() {
 		for (FactionRole role : getRoles()) {
-			if (role.isRoleControl())
+			if (role.isRoleControl() || role.isLeader())
 				return true;
 		}
 		return false;
@@ -65,7 +65,7 @@ public class FactionMember {
 
 	public boolean canClaim() {
 		for (FactionRole role : getRoles()) {
-			if (role.isCanClaim())
+			if (role.isCanClaim() || role.isLeader())
 				return true;
 		}
 		return false;

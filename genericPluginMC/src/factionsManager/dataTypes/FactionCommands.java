@@ -13,7 +13,6 @@ public class FactionCommands implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
 		if (label.equals("faction")) {
 			if (sender instanceof HumanEntity) {
 				// Get the player object

@@ -3,9 +3,12 @@ package genericPluginMC;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import factionsManager.dataTypes.Claim;
+import factionsManager.dataTypes.ClaimCommands;
 import factionsManager.dataTypes.Faction;
 import factionsManager.dataTypes.FactionCommands;
 import factionsManager.dataTypes.FactionMember;
@@ -43,6 +46,7 @@ public class GenericPlugin extends JavaPlugin {
 		factions = new ArrayList<Faction>();
 		getServer().getPluginManager().registerEvents(new Events(), this);
 		this.getCommand("faction").setExecutor(new FactionCommands());
+		this.getCommand("claim").setExecutor(new ClaimCommands());
 	}
 
 	@Override
@@ -52,5 +56,15 @@ public class GenericPlugin extends JavaPlugin {
 
 	public static JavaPlugin getPlugin() {
 		return getPlugin(GenericPlugin.class);
+	}
+	
+	public static Claim chunkOwner(Chunk chunk) {
+		for (Faction f : factions) {
+			for (Claim c : f.getClaims()) {
+				if (c.hasChunk(chunk))
+					return c;
+			}
+		}
+		return null;
 	}
 }

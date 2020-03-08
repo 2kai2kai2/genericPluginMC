@@ -83,4 +83,25 @@ public class Faction {
 		}
 		return null;
 	}
+	
+	public int maxFreeClaims() {
+		return 3; // TODO: balance this and scale by population
+	}
+	
+	public int usedFreeClaims() {
+		int num = 0;
+		for (Claim c : getClaims()) {
+			if (c.getDevLevel() == 0)
+				num ++;
+		}
+		return num;
+	}
+	
+	public Claim getClaim(String name) {
+		for (Claim c : getClaims()) {
+			if (c.getName().equalsIgnoreCase(name))
+				return c;
+		}
+		return null;
+	}
 }

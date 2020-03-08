@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.Faction;
 import factionsManager.dataTypes.FactionMember;
 import factionsManager.dataTypes.FactionRole;
@@ -32,8 +33,14 @@ public class Events implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		// If they just moved to a new chunk
 		if (event.getFrom().getChunk() != event.getTo().getChunk()) {
-			event.getPlayer().sendMessage(
-					"Crossed into chunk " + event.getTo().getChunk().getX() + ", " + event.getTo().getChunk().getZ());
+			Claim fromClaim = GenericPlugin.chunkOwner(event.getFrom().getChunk());
+			Claim toClaim = GenericPlugin.chunkOwner(event.getTo().getChunk());
+			if (fromClaim != toClaim) {
+				if (toClaim == null)
+					event.getPlayer().sendMessage("Entered wilderness.");
+				else
+					event.getPlayer().sendMessage("Entered " + toClaim.getName());
+			}
 		}
 	}
 }
