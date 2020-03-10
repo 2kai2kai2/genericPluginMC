@@ -5,6 +5,9 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import diplomacy.War;
+import genericPluginMC.GenericPlugin;
+
 public class Faction {
 
 	private String name;
@@ -83,25 +86,51 @@ public class Faction {
 		}
 		return null;
 	}
-	
+
 	public int maxFreeClaims() {
 		return 3; // TODO: balance this and scale by population
 	}
-	
+
 	public int usedFreeClaims() {
 		int num = 0;
 		for (Claim c : getClaims()) {
 			if (c.getDevLevel() == 0)
-				num ++;
+				num++;
 		}
 		return num;
 	}
-	
+
 	public Claim getClaim(String name) {
 		for (Claim c : getClaims()) {
 			if (c.getName().equalsIgnoreCase(name))
 				return c;
 		}
 		return null;
+	}
+
+	public boolean hasMemberOnline() {
+		for (Player p : GenericPlugin.getPlugin().getServer().getOnlinePlayers()) {
+			if (getMember(p.getUniqueId()) != null)
+				return true;
+		}
+		return false;
+	}
+
+	public ArrayList<War> getWars() {
+		ArrayList<War> wars = new ArrayList<War>();
+		for (War w : GenericPlugin.wars) {
+			if (w.isInvolved(this)) {
+				wars.add(w);
+			}
+		}
+		return wars;
+	}
+
+	public ArrayList<Faction> getWarEnemies() {
+		ArrayList<Faction> enemies = new ArrayList<Faction>();
+		for (War w : GenericPlugin.wars) {
+			enemies.addAll(w.getEnemies(this));
+		}
+		return enemies;
 	}
 }

@@ -5,10 +5,15 @@ author: 2kai2kai2
 prefix: GenericMC
 commands:
   faction:
-    description: All player faction control commands for the GenericPlugin.
+    description: All player faction control commands.
     usage: "Usage: /<command> <create|join|leave|role>"
     default: true
   claim:
-    description: All player claim commands
-    usage: "Usage: /<command> <new|delete|chunk|unchunk|devrequest> [name]"
+    description: All player claim commands.
+    usage: "Usage: /<command> <new|delete|chunk|unchunk|devrequest>"
     default: true
+  diplo:
+    description: All player faction diplomatic commands.
+    usage: "Usage: /<command> <war|peace|ally|mailbox|help>"
+    default: true
+    alias: diplomacy

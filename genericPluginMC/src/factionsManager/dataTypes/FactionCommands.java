@@ -86,7 +86,9 @@ public class FactionCommands implements CommandExecutor {
 							for (Faction f : GenericPlugin.factions) {
 								if (f.getName().equalsIgnoreCase(factionName)) {
 									// TODO: Make this be a request rather than just joining
+									sender.sendMessage("Joined faction: " + f.getName());
 									f.addPlayer(player);
+									return true;
 								}
 							}
 							// This means that the faction wasn't recognized
@@ -357,6 +359,8 @@ public class FactionCommands implements CommandExecutor {
 											roleStr += " editRoles";
 										if (role.isRoleGive())
 											roleStr += " giveRoles";
+										if (role.isCanDiplo())
+											roleStr += " canDiplo";
 										sender.sendMessage(roleStr);
 									}
 									return true;

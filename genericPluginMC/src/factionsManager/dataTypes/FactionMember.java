@@ -70,4 +70,12 @@ public class FactionMember {
 		}
 		return false;
 	}
+
+	public boolean canDiplo() {
+		for (FactionRole role : getRoles()) {
+			if (role.isCanDiplo() || role.isLeader())
+				return true;
+		}
+		return false;
+	}
 }

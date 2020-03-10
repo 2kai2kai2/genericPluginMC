@@ -9,6 +9,7 @@ public class FactionRole {
 	private boolean roleControl;
 	private boolean canClaim;
 	private boolean roleGive;
+	private boolean canDiplo;
 
 	public FactionRole(String name, String prefix, String postfix) {
 		this.setName(name);
@@ -18,6 +19,7 @@ public class FactionRole {
 		this.setRoleControl(false);
 		this.setRoleGive(false);
 		this.setCanClaim(false);
+		this.setCanDiplo(false);
 	}
 
 	public FactionRole(String name) {
@@ -65,6 +67,7 @@ public class FactionRole {
 		this.setCanClaim(true);
 		this.setRoleControl(true);
 		this.setRoleGive(true);
+		this.setCanDiplo(true);
 	}
 
 	public boolean isCanClaim() {
@@ -81,5 +84,13 @@ public class FactionRole {
 
 	public void setRoleGive(boolean roleGive) {
 		this.roleGive = roleGive;
+	}
+
+	public boolean isCanDiplo() {
+		return canDiplo;
+	}
+
+	public void setCanDiplo(boolean canDiplo) {
+		this.canDiplo = canDiplo;
 	}
 }

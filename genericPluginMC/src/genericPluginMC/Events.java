@@ -2,8 +2,13 @@ package genericPluginMC;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.Faction;
@@ -40,6 +45,65 @@ public class Events implements Listener {
 					event.getPlayer().sendMessage("Entered wilderness.");
 				else
 					event.getPlayer().sendMessage("Entered " + toClaim.getName());
+			}
+		}
+	}
+
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event) {
+		Claim claim = GenericPlugin.chunkOwner(event.getBlock().getChunk());
+		if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
+			// We're all good! It's wilderness or in this faction.
+		} else {
+			// Cancel in other people's territory.
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onBlockDamage(BlockDamageEvent event) {
+		Claim claim = GenericPlugin.chunkOwner(event.getBlock().getChunk());
+		if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
+			// We're all good! It's wilderness or in this faction.
+		} else {
+			// Cancel in other people's territory.
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerTakeLecternBook(PlayerTakeLecternBookEvent event) {
+		Claim claim = GenericPlugin.chunkOwner(event.getLectern().getChunk());
+		if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
+			// We're all good! It's wilderness or in this faction.
+		} else {
+			// Cancel in other people's territory.
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.hasBlock()) {
+			Claim claim = GenericPlugin.chunkOwner(event.getClickedBlock().getChunk());
+			if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
+				// We're all good! It's wilderness or in this faction.
+			} else {
+				// Cancel in other people's territory.
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onBlockIgnite(BlockIgniteEvent event) {
+		if (event.getPlayer() != null) {
+			Claim claim = GenericPlugin.chunkOwner(event.getBlock().getChunk());
+			if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
+				// We're all good! It's wilderness or in this faction.
+			} else {
+				// Cancel in other people's territory.
+				event.setCancelled(true);
 			}
 		}
 	}
