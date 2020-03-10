@@ -63,7 +63,7 @@ public class FactionCommands implements CommandExecutor {
 							player.setPlayerListName(
 									faction.getMember(player.getUniqueId()).topRole().getPrefix() + player.getName()
 											+ faction.getMember(player.getUniqueId()).topRole().getPostfix());
-
+							GenericPlugin.saveData(GenericPlugin.getPlugin());
 							sender.sendMessage("Created new faction: " + factionName);
 							return true;
 						}
@@ -88,6 +88,7 @@ public class FactionCommands implements CommandExecutor {
 									// TODO: Make this be a request rather than just joining
 									sender.sendMessage("Joined faction: " + f.getName());
 									f.addPlayer(player);
+									GenericPlugin.saveData(GenericPlugin.getPlugin());
 									return true;
 								}
 							}
@@ -106,8 +107,9 @@ public class FactionCommands implements CommandExecutor {
 							if (faction.getMembers().size() == 0) {
 								sender.sendMessage("Dissolved faction due to lack of members: " + faction.getName());
 								GenericPlugin.factions.remove(faction);
-								return true;
 							}
+							GenericPlugin.saveData(GenericPlugin.getPlugin());
+							return true;
 						} else {
 							sender.sendMessage("Too many arguments. Did you mean \"/faction leave\"?");
 							return true;
@@ -159,12 +161,13 @@ public class FactionCommands implements CommandExecutor {
 							} else {
 								FactionMember facMember = faction.getMember(player.getUniqueId());
 								if (args[1].equals("add")) { // Subcommand role add
-									if (facMember.canControlRole()) {
+									if (facMember.hasPerm(RolePerms.ROLECONTROL)) {
 										if (args.length == 3) {
 											// Check that it isn't already a role
 											if (faction.getRole(args[2]) == null) {
 												faction.getRoles().add(new FactionRole(args[2]));
 												sender.sendMessage("Created new role: " + args[2]);
+												GenericPlugin.saveData(GenericPlugin.getPlugin());
 												return true;
 											} else {
 												sender.sendMessage(
@@ -185,7 +188,7 @@ public class FactionCommands implements CommandExecutor {
 										return true;
 									}
 								} else if (args[1].equals("delete")) { // Subcommand role delete
-									if (facMember.canControlRole()) {
+									if (facMember.hasPerm(RolePerms.ROLECONTROL)) {
 										if (args.length == 3) {
 											// Check that it isn't already a role
 											FactionRole toDelete = faction.getRole(args[2]);
@@ -198,6 +201,7 @@ public class FactionCommands implements CommandExecutor {
 														member.removeRole(toDelete);
 													}
 													sender.sendMessage("Deleted role: " + args[2]);
+													GenericPlugin.saveData(GenericPlugin.getPlugin());
 													return true;
 												} else {
 													sender.sendMessage("You cannot change leader roles.");
@@ -221,7 +225,7 @@ public class FactionCommands implements CommandExecutor {
 										return true;
 									}
 								} else if (args[1].equals("give")) { // Subcomand role give
-									if (facMember.canGiveRole()) {
+									if (facMember.hasPerm(RolePerms.ROLEGIVE)) {
 										if (args.length == 4) {
 											// Get player
 											OfflinePlayer oPlayer = null;
@@ -256,6 +260,7 @@ public class FactionCommands implements CommandExecutor {
 														faction.getMember(oPlayer.getUniqueId()).addRole(role);
 														sender.sendMessage("Gave player " + oPlayer.getName()
 																+ " role: " + role.getName());
+														GenericPlugin.saveData(GenericPlugin.getPlugin());
 														return true;
 													}
 												}
@@ -282,7 +287,7 @@ public class FactionCommands implements CommandExecutor {
 										return true;
 									}
 								} else if (args[1].equals("remove")) { // Subcommand role remove
-									if (facMember.canGiveRole()) {
+									if (facMember.hasPerm(RolePerms.ROLEGIVE)) {
 										if (args.length == 4) {
 											// Get player
 											OfflinePlayer oPlayer = null;
@@ -317,6 +322,7 @@ public class FactionCommands implements CommandExecutor {
 														faction.getMember(oPlayer.getUniqueId()).removeRole(role);
 														sender.sendMessage("Removed from player " + oPlayer.getName()
 																+ " role: " + role.getName());
+														GenericPlugin.saveData(GenericPlugin.getPlugin());
 														return true;
 													}
 												}
@@ -352,15 +358,11 @@ public class FactionCommands implements CommandExecutor {
 										String roleStr = "- " + role.getName() + " | Naming: " + role.getPrefix()
 												+ "[PLAYER]" + role.getPostfix() + " | Permissions:";
 										if (role.isLeader())
-											roleStr += " Leader";
-										if (role.isCanClaim())
-											roleStr += " canClaim";
-										if (role.isRoleControl())
-											roleStr += " editRoles";
-										if (role.isRoleGive())
-											roleStr += " giveRoles";
-										if (role.isCanDiplo())
-											roleStr += " canDiplo";
+											roleStr += " LEADER";
+										for (RolePerms p : RolePerms.values()) {
+											if (role.hasPerm(p))
+												roleStr += " " + p.toString();
+										}
 										sender.sendMessage(roleStr);
 									}
 									return true;

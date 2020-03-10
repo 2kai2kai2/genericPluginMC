@@ -1,14 +1,17 @@
 package factionsManager.dataTypes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
 import diplomacy.War;
 import genericPluginMC.GenericPlugin;
 
-public class Faction {
+public class Faction implements ConfigurationSerializable {
 
 	private String name;
 	private ArrayList<FactionMember> members;
@@ -27,6 +30,23 @@ public class Faction {
 		leaderMember.getRoles().add(roles.get(0));
 		members.add(leaderMember);
 		this.claims = new ArrayList<Claim>();
+	}
+
+	@SuppressWarnings("unchecked")
+	public Faction(Map<String, Object> map) {
+		this.setName((String) map.get("name"));
+		this.roles = new ArrayList<FactionRole>();
+		for (Map<String, Object> roleMap : (ArrayList<Map<String, Object>>) map.get("roles")) {
+			this.roles.add(new FactionRole(roleMap));
+		}
+		this.members = new ArrayList<FactionMember>();
+		for (Map<String, Object> memberMap : (ArrayList<Map<String, Object>>) map.get("members")) {
+			this.members.add(new FactionMember(memberMap, this));
+		}
+		this.claims = new ArrayList<Claim>();
+		for (Map<String, Object> claimMap : (ArrayList<Map<String, Object>>) map.get("claims")) {
+			this.claims.add(new Claim(claimMap, this));
+		}
 	}
 
 	public ArrayList<FactionMember> getMembers() {
@@ -132,5 +152,31 @@ public class Faction {
 			enemies.addAll(w.getEnemies(this));
 		}
 		return enemies;
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("name", name);
+
+		ArrayList<Map<String, Object>> memberMaps = new ArrayList<Map<String, Object>>();
+		for (FactionMember member : getMembers()) {
+			memberMaps.add(member.serialize());
+		}
+		map.put("members", memberMaps);
+
+		ArrayList<Map<String, Object>> roleMaps = new ArrayList<Map<String, Object>>();
+		for (FactionRole role : getRoles()) {
+			roleMaps.add(role.serialize());
+		}
+		map.put("roles", roleMaps);
+
+		ArrayList<Map<String, Object>> claimMaps = new ArrayList<Map<String, Object>>();
+		for (Claim claim : getClaims()) {
+			claimMaps.add(claim.serialize());
+		}
+		map.put("claims", claimMaps);
+
+		return map;
 	}
 }

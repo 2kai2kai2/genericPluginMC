@@ -43,7 +43,7 @@ public class ClaimCommands implements CommandExecutor {
 							sender.sendMessage("Too many arguments. Claim name must be one word.");
 							return true;
 						} else {
-							if (member.canClaim()) { // Check that this player has perms
+							if (member.hasPerm(RolePerms.CLAIM)) { // Check that this player has perms
 								if (faction.getClaim(args[1]) == null) { // Check the claim name isn't used
 									if (faction.maxFreeClaims() > faction.usedFreeClaims()) {
 										// Check the faction can still claim land
@@ -52,6 +52,7 @@ public class ClaimCommands implements CommandExecutor {
 											// Check that the chunk we're in isn't taken, otherwise add it
 											faction.getClaims().add(claim);
 											sender.sendMessage("Created new claim: " + claim.getName());
+											GenericPlugin.saveData(GenericPlugin.getPlugin());
 											return true;
 										} else {
 											sender.sendMessage(
@@ -80,11 +81,12 @@ public class ClaimCommands implements CommandExecutor {
 							sender.sendMessage("Too many arguments. Claim name must be one word.");
 							return true;
 						} else {
-							if (member.canClaim()) { // Check that this player has perms
+							if (member.hasPerm(RolePerms.CLAIM)) { // Check that this player has perms
 								Claim claim = faction.getClaim(args[1]);
 								if (claim != null) { // Check the claim name isn't used
 									faction.getClaims().remove(claim);
 									sender.sendMessage("Deleted claim: " + claim.getName());
+									GenericPlugin.saveData(GenericPlugin.getPlugin());
 									return true;
 								} else {
 									sender.sendMessage("The specified claim name was not recognized: " + args[1]);
@@ -96,7 +98,7 @@ public class ClaimCommands implements CommandExecutor {
 							}
 						}
 					} else if (args[0].equals("chunk")) {
-						if (member.canClaim()) { // Check that this player has perms
+						if (member.hasPerm(RolePerms.CLAIM)) { // Check that this player has perms
 							Claim claim = faction.getClaim(args[1]);
 							if (claim != null) { // Check the claim exists
 								if (claim.maxChunks() > claim.numChunks()) {
@@ -106,6 +108,7 @@ public class ClaimCommands implements CommandExecutor {
 										// Check that the chunk we're in isn't taken, otherwise add it
 										sender.sendMessage("Added chunk (" + chunk.getX() + ", " + chunk.getZ()
 												+ ") to claim: " + claim.getName());
+										GenericPlugin.saveData(GenericPlugin.getPlugin());
 										return true;
 									} else {
 										sender.sendMessage(
@@ -126,7 +129,7 @@ public class ClaimCommands implements CommandExecutor {
 							return true;
 						}
 					} else if (args[0].equals("unchunk")) {
-						if (member.canClaim()) { // Check that this player has perms
+						if (member.hasPerm(RolePerms.CLAIM)) { // Check that this player has perms
 							Claim claim = faction.getClaim(args[1]);
 							if (claim != null) { // Check the claim exists
 								if (claim.numChunks() > 1) {
@@ -136,6 +139,7 @@ public class ClaimCommands implements CommandExecutor {
 										// Remove the chunk if it's in the claim, or if it's not then do nothing.
 										sender.sendMessage("Removed chunk (" + chunk.getX() + ", " + chunk.getZ()
 												+ ") from claim: " + claim.getName());
+										GenericPlugin.saveData(GenericPlugin.getPlugin());
 										return true;
 									} else {
 										sender.sendMessage("This chunk is already not in the claim.");

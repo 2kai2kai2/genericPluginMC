@@ -1,10 +1,14 @@
 package diplomacy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import factionsManager.dataTypes.Faction;
 
-public class War {
+public class War implements ConfigurationSerializable {
 	private String name;
 	private ArrayList<Faction> attackers;
 	private ArrayList<Faction> defenders;
@@ -44,5 +48,11 @@ public class War {
 	
 	public boolean isInvolved(Faction faction) {
 		return getAttackers().contains(faction) || getDefenders().contains(faction);
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		return map;
 	}
 }

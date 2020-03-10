@@ -1,9 +1,13 @@
 package factionsManager.dataTypes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-public class FactionMember {
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+public class FactionMember implements ConfigurationSerializable {
 
 	private UUID player;
 	private Faction faction;
@@ -13,6 +17,14 @@ public class FactionMember {
 		this.faction = faction;
 		this.player = player;
 		this.roles = new ArrayList<FactionRole>();
+	}
+
+	@SuppressWarnings("unchecked")
+	public FactionMember(Map<String, Object> map, Faction f) {
+		this(f, UUID.fromString((String) map.get("uuid")));
+		for (String roleName : (ArrayList<String>) map.get("roles")) {
+			this.addRole(f.getRole(roleName));
+		}
 	}
 
 	public ArrayList<FactionRole> getRoles() {
@@ -47,35 +59,24 @@ public class FactionMember {
 		return getFaction().topRole(getRoles());
 	}
 
-	public boolean canGiveRole() {
+	public boolean hasPerm(RolePerms perm) {
 		for (FactionRole role : getRoles()) {
-			if (role.isRoleGive() || role.isLeader())
+			if (role.hasPerm(perm) || role.isLeader())
 				return true;
 		}
 		return false;
 	}
 
-	public boolean canControlRole() {
-		for (FactionRole role : getRoles()) {
-			if (role.isRoleControl() || role.isLeader())
-				return true;
+	@Override
+	public Map<String, Object> serialize() {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("uuid", this.getPlayer().toString());
+		map.put("faction", this.getFaction().getName());
+		ArrayList<String> roleList = new ArrayList<String>();
+		for (FactionRole r : this.getRoles()) {
+			roleList.add(r.getName());
 		}
-		return false;
-	}
-
-	public boolean canClaim() {
-		for (FactionRole role : getRoles()) {
-			if (role.isCanClaim() || role.isLeader())
-				return true;
-		}
-		return false;
-	}
-
-	public boolean canDiplo() {
-		for (FactionRole role : getRoles()) {
-			if (role.isCanDiplo() || role.isLeader())
-				return true;
-		}
-		return false;
+		map.put("roles", roleList);
+		return map;
 	}
 }

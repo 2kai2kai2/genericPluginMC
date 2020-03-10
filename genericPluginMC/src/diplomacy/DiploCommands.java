@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import factionsManager.dataTypes.Faction;
 import factionsManager.dataTypes.FactionMember;
+import factionsManager.dataTypes.RolePerms;
 import genericPluginMC.GenericPlugin;
 
 public class DiploCommands implements CommandExecutor {
@@ -38,7 +39,7 @@ public class DiploCommands implements CommandExecutor {
 				} else {
 					if (args[0].equals("war")) {
 						// If the player can do diplo
-						if (member.canDiplo()) {
+						if (member.hasPerm(RolePerms.DIPLO)) {
 							if (args.length > 1) {
 								// Get the name of this new faction
 								String factionName = "";
@@ -55,6 +56,7 @@ public class DiploCommands implements CommandExecutor {
 										GenericPlugin.wars.add(
 												new War(faction, dipFaction, faction + " war against " + dipFaction));
 										sender.sendMessage("Declared war on " + dipFaction);
+										// GenericPlugin.saveData(GenericPlugin.getPlugin());
 										return true;
 									} else {
 										sender.sendMessage("You cannot declare war because you are already at war with "
@@ -75,7 +77,7 @@ public class DiploCommands implements CommandExecutor {
 						}
 					} else if (args[0].equals("peace")) {
 						// If the player can do diplo
-						if (member.canDiplo()) {
+						if (member.hasPerm(RolePerms.DIPLO)) {
 							sender.sendMessage("Not yet implemented.");
 							return true;
 						} else {
@@ -84,7 +86,7 @@ public class DiploCommands implements CommandExecutor {
 						}
 					} else if (args[0].equals("ally")) {
 						// If the player can do diplo
-						if (member.canDiplo()) {
+						if (member.hasPerm(RolePerms.DIPLO)) {
 							sender.sendMessage("Not yet implemented.");
 							return true;
 						} else {
