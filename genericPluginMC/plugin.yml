@@ -14,6 +14,6 @@ commands:
     default: true
   diplo:
     description: All player faction diplomatic commands.
-    usage: "Usage: /<command> <war|peace|ally|mailbox|help>"
+    usage: "Usage: /<command> <war|peace|ally|unally|relations|mailbox|help>"
     default: true
     alias: diplomacy

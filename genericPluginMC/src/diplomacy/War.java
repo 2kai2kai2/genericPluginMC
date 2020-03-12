@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import factionsManager.dataTypes.Faction;
+import genericPluginMC.GenericPlugin;
 
 public class War implements ConfigurationSerializable {
 	private String name;
@@ -19,6 +20,24 @@ public class War implements ConfigurationSerializable {
 		defenders = new ArrayList<Faction>();
 		defenders.add(defender);
 		setName(name);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public War(Map<String, Object> map) {
+		this.setName((String) map.get("name"));
+		ArrayList<String> attackerNames = (ArrayList<String>) map.get("attackers");
+		ArrayList<String> defenderNames = (ArrayList<String>) map.get("defenders");
+		
+		for (String aName : attackerNames) {
+			Faction faction = GenericPlugin.factionFromName(aName);
+			if (faction != null)
+				attackers.add(faction);
+		}
+		for (String dName : defenderNames) {
+			Faction faction = GenericPlugin.factionFromName(dName);
+			if (faction != null)
+				attackers.add(faction);
+		}
 	}
 
 	public String getName() {
@@ -53,6 +72,15 @@ public class War implements ConfigurationSerializable {
 	@Override
 	public Map<String, Object> serialize() {
 		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("name", getName());
+		ArrayList<String> attackerNames = new ArrayList<String>();
+		for (Faction f : getAttackers())
+			attackerNames.add(f.getName());
+		ArrayList<String> defenderNames = new ArrayList<String>();
+		for (Faction f : getDefenders())
+			defenderNames.add(f.getName());
+		map.put("attackers", attackerNames);
+		map.put("defenders", defenderNames);
 		return map;
 	}
 }

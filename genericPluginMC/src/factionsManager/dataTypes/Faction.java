@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
+import diplomacy.DiploNotificationMail;
 import diplomacy.War;
 import genericPluginMC.GenericPlugin;
 
@@ -17,11 +18,13 @@ public class Faction implements ConfigurationSerializable {
 	private ArrayList<FactionMember> members;
 	private ArrayList<FactionRole> roles;
 	private ArrayList<Claim> claims;
+	private ArrayList<Faction> allies;
 
 	public Faction(UUID leader, String name) {
 		this.setName(name);
 		members = new ArrayList<FactionMember>();
 		roles = new ArrayList<FactionRole>();
+		allies = new ArrayList<Faction>();
 		FactionRole leaderRole = new FactionRole("Leader", "Leader ", " of " + name);
 		leaderRole.setLeader(true);
 		roles.add(leaderRole);
@@ -46,6 +49,18 @@ public class Faction implements ConfigurationSerializable {
 		this.claims = new ArrayList<Claim>();
 		for (Map<String, Object> claimMap : (ArrayList<Map<String, Object>>) map.get("claims")) {
 			this.claims.add(new Claim(claimMap, this));
+		}
+		this.allies = new ArrayList<Faction>();
+		for (String allyName : (ArrayList<String>) map.get("allies")) {
+			Faction ally = GenericPlugin.factionFromName(allyName);
+			if (ally != null) {
+				// That faction has already been processed on the list but hasn't added this one
+				// as an ally yet because this faction hadn't been loaded yet.
+				this.addAlly(ally);
+				ally.addAlly(this);
+			}
+			// else-- That faction hasn't been already loaded so the alliances will be added
+			// once it has so that both will be loaded when the alliances are added.
 		}
 	}
 
@@ -108,7 +123,17 @@ public class Faction implements ConfigurationSerializable {
 	}
 
 	public int maxFreeClaims() {
-		return 3; // TODO: balance this and scale by population
+		return (int) (1.5 * Math.sqrt(getMembers().size()));
+		/*
+		 * 1 -> 1
+		 * 2 -> 2
+		 * 4 -> 3
+		 * 8 -> 4
+		 * 12-> 5
+		 * 16-> 6
+		 * 22-> 7
+		 * etc. increasing over time the number of players needed to gain another free claim.
+		 */
 	}
 
 	public int usedFreeClaims() {
@@ -154,6 +179,19 @@ public class Faction implements ConfigurationSerializable {
 		return enemies;
 	}
 
+	public ArrayList<Faction> getAllies() {
+		return allies;
+	}
+
+	public void addAlly(Faction ally) {
+		if (!getAllies().contains(ally))
+			getAllies().add(ally);
+	}
+
+	public void sendNotifMail(Faction recipient, String title, String message) {
+		GenericPlugin.mail.add(new DiploNotificationMail(title, this, recipient, message));
+	}
+
 	@Override
 	public Map<String, Object> serialize() {
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -176,6 +214,12 @@ public class Faction implements ConfigurationSerializable {
 			claimMaps.add(claim.serialize());
 		}
 		map.put("claims", claimMaps);
+
+		ArrayList<String> allyList = new ArrayList<String>();
+		for (Faction faction : getAllies()) {
+			allyList.add(faction.getName());
+		}
+		map.put("allies", allyList);
 
 		return map;
 	}

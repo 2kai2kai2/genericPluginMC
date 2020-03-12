@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
+import diplomacy.War;
 import genericPluginMC.GenericPlugin;
 
 public class FactionCommands implements CommandExecutor {
@@ -107,6 +108,24 @@ public class FactionCommands implements CommandExecutor {
 							if (faction.getMembers().size() == 0) {
 								sender.sendMessage("Dissolved faction due to lack of members: " + faction.getName());
 								GenericPlugin.factions.remove(faction);
+
+								// Dissolve any wars that this is a leader in or remove it from ones it is
+								// participating in
+								for (int i = GenericPlugin.wars.size() - 1; i >= 0; i--) {
+									War w = GenericPlugin.wars.get(i);
+									if (w.getDefenders().get(0) == faction || w.getAttackers().get(0) == faction) {
+										GenericPlugin.wars.remove(i);
+									} else if (w.getDefenders().contains(faction))
+										w.getDefenders().remove(faction);
+									else if (w.getAttackers().contains(faction))
+										w.getAttackers().remove(faction);
+								}
+
+								// Remove any mail sent to this faction
+								for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
+									if (GenericPlugin.mail.get(i).getRecipient() == faction)
+										GenericPlugin.mail.remove(i);
+								}
 							}
 							GenericPlugin.saveData(GenericPlugin.getPlugin());
 							return true;

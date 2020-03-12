@@ -13,7 +13,10 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import diplomacy.AllyOfferMail;
 import diplomacy.DiploCommands;
+import diplomacy.DiploMail;
+import diplomacy.DiploNotificationMail;
 import diplomacy.War;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.ClaimCommands;
@@ -29,6 +32,7 @@ public class GenericPlugin extends JavaPlugin {
 
 	public static ArrayList<Faction> factions;
 	public static ArrayList<War> wars;
+	public static ArrayList<DiploMail> mail;
 
 	public static Faction getPlayerFaction(UUID player) {
 		for (Faction f : factions) {
@@ -54,6 +58,15 @@ public class GenericPlugin extends JavaPlugin {
 		return null;
 	}
 
+	public static ArrayList<DiploMail> recievedMail(Faction f) {
+		ArrayList<DiploMail> recMail = new ArrayList<DiploMail>();
+		for (DiploMail m : mail) {
+			if (m.getRecipient() == f)
+				recMail.add(m);
+		}
+		return recMail;
+	}
+
 	@Override
 	public void onEnable() {
 		ConfigurationSerialization.registerClass(Faction.class);
@@ -63,6 +76,7 @@ public class GenericPlugin extends JavaPlugin {
 
 		factions = new ArrayList<Faction>();
 		wars = new ArrayList<War>();
+		mail = new ArrayList<DiploMail>();
 
 		config = this.getConfig();
 		config.addDefault("allow-wars", true);
@@ -99,12 +113,21 @@ public class GenericPlugin extends JavaPlugin {
 	}
 
 	public static void saveData(JavaPlugin p) {
-		System.out.println("Saving data=-=asdf[awer fjs;dfj");
 		ArrayList<Map<String, Object>> factionMaps = new ArrayList<Map<String, Object>>();
 		for (Faction f : factions)
 			factionMaps.add(f.serialize());
-		System.out.println(factionMaps);
 		data.set("factions", factionMaps);
+
+		ArrayList<Map<String, Object>> warMaps = new ArrayList<Map<String, Object>>();
+		for (War w : wars)
+			warMaps.add(w.serialize());
+		data.set("wars", warMaps);
+		
+		ArrayList<Map<String, Object>> mailMaps = new ArrayList<Map<String, Object>>();
+		for (DiploMail m : mail) {
+			mailMaps.add(m.serialize());
+		}
+		data.set("mail", mailMaps);
 		try {
 			data.save(new File(p.getDataFolder(), "data.yml"));
 		} catch (IOException e) {
@@ -112,15 +135,30 @@ public class GenericPlugin extends JavaPlugin {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	public static void loadData(JavaPlugin p) {
-		// boolean keepUnique,
-		System.out.println(data);
-		@SuppressWarnings({ "unchecked" })
 		ArrayList<Map<String, Object>> factionMaps = (ArrayList<Map<String, Object>>) data.get("factions");
-		System.out.println(factionMaps);
 		if (factionMaps != null) {
 			for (Map<String, Object> map : factionMaps) {
 				factions.add(new Faction(map));
+			}
+		}
+
+		ArrayList<Map<String, Object>> warMaps = (ArrayList<Map<String, Object>>) data.get("wars");
+		if (warMaps != null) {
+			for (Map<String, Object> map : warMaps) {
+				wars.add(new War(map));
+			}
+		}
+
+		ArrayList<Map<String, Object>> mailMaps = (ArrayList<Map<String, Object>>) data.get("mail");
+		if (mailMaps != null) {
+			for (Map<String, Object> map : mailMaps) {
+				String diffKey = (String) map.get("diffKey");
+				if (diffKey.equals(AllyOfferMail.diffKey))
+					mail.add(new AllyOfferMail(map));
+				else if (diffKey.equals(DiploNotificationMail.diffKey))
+					mail.add(new DiploNotificationMail(map));
 			}
 		}
 	}
