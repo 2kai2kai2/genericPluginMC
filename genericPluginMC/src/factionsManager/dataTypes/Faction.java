@@ -191,6 +191,11 @@ public class Faction implements ConfigurationSerializable {
 	public void sendNotifMail(Faction recipient, String title, String message) {
 		GenericPlugin.mail.add(new DiploNotificationMail(title, this, recipient, message));
 	}
+	
+	public boolean canPlayerModify(Player p) {
+		Faction f = GenericPlugin.getPlayerFaction(p);
+		return f == this || this.getWarEnemies().contains(f);
+	}
 
 	@Override
 	public Map<String, Object> serialize() {

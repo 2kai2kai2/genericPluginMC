@@ -52,8 +52,8 @@ public class Events implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Claim claim = GenericPlugin.chunkOwner(event.getBlock().getChunk());
-		if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
-			// We're all good! It's wilderness or in this faction.
+		if (claim == null || claim.getOwner().canPlayerModify(event.getPlayer())) {
+			// We're all good! It's wilderness, at war, or in this faction.
 		} else {
 			// Cancel in other people's territory.
 			event.setCancelled(true);
@@ -63,8 +63,8 @@ public class Events implements Listener {
 	@EventHandler
 	public void onBlockDamage(BlockDamageEvent event) {
 		Claim claim = GenericPlugin.chunkOwner(event.getBlock().getChunk());
-		if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
-			// We're all good! It's wilderness or in this faction.
+		if (claim == null || claim.getOwner().canPlayerModify(event.getPlayer())) {
+			// We're all good! It's wilderness, at war, or in this faction.
 		} else {
 			// Cancel in other people's territory.
 			event.setCancelled(true);
@@ -74,8 +74,8 @@ public class Events implements Listener {
 	@EventHandler
 	public void onPlayerTakeLecternBook(PlayerTakeLecternBookEvent event) {
 		Claim claim = GenericPlugin.chunkOwner(event.getLectern().getChunk());
-		if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
-			// We're all good! It's wilderness or in this faction.
+		if (claim == null || claim.getOwner().canPlayerModify(event.getPlayer())) {
+			// We're all good! It's wilderness, at war, or in this faction.
 		} else {
 			// Cancel in other people's territory.
 			event.setCancelled(true);
@@ -86,8 +86,8 @@ public class Events implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.hasBlock()) {
 			Claim claim = GenericPlugin.chunkOwner(event.getClickedBlock().getChunk());
-			if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
-				// We're all good! It's wilderness or in this faction.
+			if (claim == null || claim.getOwner().canPlayerModify(event.getPlayer())) {
+				// We're all good! It's wilderness, at war, or in this faction.
 			} else {
 				// Cancel in other people's territory.
 				event.setCancelled(true);
@@ -99,8 +99,8 @@ public class Events implements Listener {
 	public void onBlockIgnite(BlockIgniteEvent event) {
 		if (event.getPlayer() != null) {
 			Claim claim = GenericPlugin.chunkOwner(event.getBlock().getChunk());
-			if (claim == null || claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
-				// We're all good! It's wilderness or in this faction.
+			if (claim == null || claim.getOwner().canPlayerModify(event.getPlayer())) {
+				// We're all good! It's wilderness, at war, or in this faction.
 			} else {
 				// Cancel in other people's territory.
 				event.setCancelled(true);
