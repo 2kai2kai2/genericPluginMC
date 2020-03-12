@@ -1,5 +1,7 @@
 package diplomacy;
 
+import java.util.Map;
+
 import factionsManager.dataTypes.Faction;
 import genericPluginMC.GenericPlugin;
 
@@ -10,6 +12,10 @@ public class PeaceOfferMail extends DiploMail {
 	public PeaceOfferMail(Faction sender, Faction recipient) {
 		super(sender.getName() + " peace offer to " + recipient.getName(), sender, recipient);
 		setDescription(sender.getName() + " wants peace with " + recipient.getName() + ". Shall we accept?");
+	}
+
+	public PeaceOfferMail(Map<String, Object> map) {
+		super(map);
 	}
 
 	public void approve() {

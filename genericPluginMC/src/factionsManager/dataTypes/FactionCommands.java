@@ -7,6 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
+import diplomacy.DiploMail;
+import diplomacy.JoinRequestMail;
 import diplomacy.War;
 import genericPluginMC.GenericPlugin;
 
@@ -64,6 +66,13 @@ public class FactionCommands implements CommandExecutor {
 							player.setPlayerListName(
 									faction.getMember(player.getUniqueId()).topRole().getPrefix() + player.getName()
 											+ faction.getMember(player.getUniqueId()).topRole().getPostfix());
+							// Delete any other faction join requests
+							for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
+								DiploMail mail = GenericPlugin.mail.get(i);
+								if (mail instanceof JoinRequestMail && ((JoinRequestMail) mail).getPlayer().equals(player.getUniqueId()))
+									GenericPlugin.mail.remove(i);
+							}
+							
 							GenericPlugin.saveData(GenericPlugin.getPlugin());
 							sender.sendMessage("Created new faction: " + factionName);
 							return true;
@@ -86,9 +95,8 @@ public class FactionCommands implements CommandExecutor {
 
 							for (Faction f : GenericPlugin.factions) {
 								if (f.getName().equalsIgnoreCase(factionName)) {
-									// TODO: Make this be a request rather than just joining
-									sender.sendMessage("Joined faction: " + f.getName());
-									f.addPlayer(player);
+									sender.sendMessage("Sent request to join faction: " + f.getName());
+									GenericPlugin.mail.add(new JoinRequestMail(player.getDisplayName() + " request to join " + f.getName(), player.getUniqueId(), f));
 									GenericPlugin.saveData(GenericPlugin.getPlugin());
 									return true;
 								}

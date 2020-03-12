@@ -17,6 +17,8 @@ import diplomacy.AllyOfferMail;
 import diplomacy.DiploCommands;
 import diplomacy.DiploMail;
 import diplomacy.DiploNotificationMail;
+import diplomacy.JoinRequestMail;
+import diplomacy.PeaceOfferMail;
 import diplomacy.War;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.ClaimCommands;
@@ -159,6 +161,10 @@ public class GenericPlugin extends JavaPlugin {
 					mail.add(new AllyOfferMail(map));
 				else if (diffKey.equals(DiploNotificationMail.diffKey))
 					mail.add(new DiploNotificationMail(map));
+				else if (diffKey.equals(PeaceOfferMail.diffKey))
+					mail.add(new PeaceOfferMail(map));
+				else if (diffKey.equals(JoinRequestMail.diffKey))
+					mail.add(new JoinRequestMail(map));
 			}
 		}
 	}

@@ -237,8 +237,16 @@ public class DiploCommands implements CommandExecutor {
 								ChatColor.UNDERLINE.toString() + ChatColor.BOLD.toString() + "======MAIL======");
 						for (DiploMail mail : GenericPlugin.recievedMail(faction)) {
 							sender.sendMessage(ChatColor.UNDERLINE.toString() + mail.getTitle());
-							sender.sendMessage("From: " + ChatColor.ITALIC + mail.getSender().getName()
-									+ ChatColor.RESET + "   To: " + ChatColor.ITALIC + mail.getRecipient().getName());
+							if (mail instanceof JoinRequestMail)
+								sender.sendMessage("From: " + ChatColor.ITALIC
+										+ GenericPlugin.getPlugin().getServer()
+												.getOfflinePlayer(((JoinRequestMail) mail).getPlayer()).getName()
+										+ ChatColor.RESET + "   To: " + ChatColor.ITALIC
+										+ mail.getRecipient().getName());
+							else
+								sender.sendMessage(
+										"From: " + ChatColor.ITALIC + mail.getSender().getName() + ChatColor.RESET
+												+ "   To: " + ChatColor.ITALIC + mail.getRecipient().getName());
 							sender.sendMessage(mail.getDescription());
 							if (mail instanceof DiploNotificationMail) {
 								player.performCommand("tellraw @p [\"\",{\"text\":\"" + ChatColor.BOLD.toString()

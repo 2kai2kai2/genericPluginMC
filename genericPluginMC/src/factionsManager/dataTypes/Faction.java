@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
@@ -94,7 +95,7 @@ public class Faction implements ConfigurationSerializable {
 		return claims;
 	}
 
-	public void addPlayer(Player p) {
+	public void addPlayer(OfflinePlayer p) {
 		if (getMember(p.getUniqueId()) == null) {
 			FactionMember member = new FactionMember(this, p.getUniqueId());
 			member.addRole(getRoles().get(getRoles().size() - 1));
@@ -102,7 +103,7 @@ public class Faction implements ConfigurationSerializable {
 		}
 	}
 
-	public void removePlayer(Player p) {
+	public void removePlayer(OfflinePlayer p) {
 		getMembers().remove(getMember(p.getUniqueId()));
 	}
 
