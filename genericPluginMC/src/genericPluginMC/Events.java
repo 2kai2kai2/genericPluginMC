@@ -1,5 +1,6 @@
 package genericPluginMC;
 
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
@@ -42,9 +43,9 @@ public class Events implements Listener {
 			Claim toClaim = GenericPlugin.chunkOwner(event.getTo().getChunk());
 			if (fromClaim != toClaim) {
 				if (toClaim == null)
-					event.getPlayer().sendMessage("Entered wilderness.");
+					event.getPlayer().sendTitle("", ChatColor.DARK_GREEN.toString() + "Entered wilderness", 8, 60, 12);
 				else
-					event.getPlayer().sendMessage("Entered " + toClaim.getName());
+					event.getPlayer().sendTitle("", "Entered " + toClaim.getName(), 8, 60, 12);
 			}
 		}
 	}

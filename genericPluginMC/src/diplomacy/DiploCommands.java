@@ -102,8 +102,36 @@ public class DiploCommands implements CommandExecutor {
 					} else if (args[0].equals("peace")) {
 						// If the player can do diplo
 						if (member.hasPerm(RolePerms.DIPLO)) {
-							sender.sendMessage("Not yet implemented.");
-							return true;
+							if (args.length > 1) {
+								// Get the name of this other faction
+								String factionName = "";
+								for (int i = 1; i < args.length; i++) {
+									if (i != 1)
+										factionName += " ";
+									factionName += args[i];
+								}
+								Faction dipFaction = GenericPlugin.factionFromName(factionName);
+								// Check that the faction is valid
+								if (dipFaction != null) {
+									// Check that they are at war with each other
+									if (faction.getWarEnemies().contains(dipFaction)) {
+										sender.sendMessage("Send peace offer to " + dipFaction.getName());
+										GenericPlugin.mail.add(new PeaceOfferMail(faction, dipFaction));
+										GenericPlugin.saveData(GenericPlugin.getPlugin());
+										return true;
+									} else {
+										sender.sendMessage("You cannot create peace with " + dipFaction.getName()
+												+ " because you are not at war.");
+										return true;
+									}
+								} else {
+									sender.sendMessage("The specified faction was not recognized: " + factionName);
+									return true;
+								}
+							} else {
+								sender.sendMessage("You must include a faction to send peace deal to.");
+								return true;
+							}
 						} else {
 							sender.sendMessage("You do not have permission within your faction to do diplomacy.");
 							return true;
