@@ -1,5 +1,6 @@
 package factionsManager.dataTypes;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -69,10 +70,11 @@ public class FactionCommands implements CommandExecutor {
 							// Delete any other faction join requests
 							for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
 								DiploMail mail = GenericPlugin.mail.get(i);
-								if (mail instanceof JoinRequestMail && ((JoinRequestMail) mail).getPlayer().equals(player.getUniqueId()))
+								if (mail instanceof JoinRequestMail
+										&& ((JoinRequestMail) mail).getPlayer().equals(player.getUniqueId()))
 									GenericPlugin.mail.remove(i);
 							}
-							
+
 							GenericPlugin.saveData(GenericPlugin.getPlugin());
 							sender.sendMessage("Created new faction: " + factionName);
 							return true;
@@ -96,7 +98,9 @@ public class FactionCommands implements CommandExecutor {
 							for (Faction f : GenericPlugin.factions) {
 								if (f.getName().equalsIgnoreCase(factionName)) {
 									sender.sendMessage("Sent request to join faction: " + f.getName());
-									GenericPlugin.mail.add(new JoinRequestMail(player.getDisplayName() + " request to join " + f.getName(), player.getUniqueId(), f));
+									GenericPlugin.mail.add(new JoinRequestMail(
+											player.getDisplayName() + " request to join " + f.getName(),
+											player.getUniqueId(), f));
 									GenericPlugin.saveData(GenericPlugin.getPlugin());
 									return true;
 								}
@@ -377,7 +381,84 @@ public class FactionCommands implements CommandExecutor {
 										return true;
 									}
 								} else if (args[1].equals("setting")) { // Subcommand role setting
-									sender.sendMessage("This is not yet implemented.");
+									// /faction role perm --- this isn't enough
+									if (args.length == 2) {
+										sender.sendMessage("You must specify a role to view or change.");
+										return true;
+									}
+									if (args.length == 3) {
+										FactionRole spec = faction.getRole(args[2]);
+										// Check that the role exists
+										if (spec == null) {
+											sender.sendMessage(
+													"The role you specified was not recognized for this faction: "
+															+ args[2]);
+											return true;
+										} else {
+											sender.sendMessage(
+													ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
+															+ "======" + spec.getName().toUpperCase() + "======");
+											sender.sendMessage(ChatColor.UNDERLINE.toString() + "Display name: "
+													+ ChatColor.RESET.toString() + spec.getPrefix() + "[USERNAME]"
+													+ spec.getPostfix());
+											String permStr = ChatColor.UNDERLINE.toString() + "Permissions:"
+													+ ChatColor.RESET.toString();
+											for (RolePerms p : RolePerms.values()) {
+												if (spec.hasPerm(p))
+													permStr += " " + p.toString();
+											}
+											sender.sendMessage(permStr);
+										}
+									} else if (args.length >= 5) {
+										FactionRole spec = faction.getRole(args[2]);
+										String changeStr = "";
+										for (int i = 4; i < args.length; i++)
+											changeStr += args[i] + " ";
+										// Check that the role exists
+										if (spec == null) {
+											sender.sendMessage(
+													"The role you specified was not recognized for this faction: "
+															+ args[2]);
+											return true;
+										} else {
+											if (args[3].equalsIgnoreCase("prefix")) {
+												spec.setPrefix(changeStr);
+												sender.sendMessage("Changed prefix for " + spec.getName() + " to: " + changeStr);
+												return true;
+											} else if (args[3].equalsIgnoreCase("postfix")) {
+												spec.setPostfix(" " + changeStr.trim());
+												sender.sendMessage("Changed postfix for " + spec.getName() + " to: " + changeStr);
+												return true;
+											} else {
+												boolean change;
+												if (changeStr.trim().equalsIgnoreCase("true") || changeStr.trim().equalsIgnoreCase("yes"))
+													change = true;
+												else if (changeStr.trim().equalsIgnoreCase("false") || changeStr.trim().equalsIgnoreCase("no"))
+													change = false;
+												else {
+													sender.sendMessage("Boolean argument not recognized: " + changeStr);
+													return true;
+												}
+												
+												for (RolePerms perm : RolePerms.values()) {
+													if (perm.toString().equalsIgnoreCase(args[3])) {
+														if (change == true)
+															spec.givePerm(perm);
+														else // change == false
+															spec.removePerm(perm);
+														sender.sendMessage("Changed permission " + perm.toString() + " to " + change);
+														return true;
+													}
+												}
+												// Getting here means that the perm hasn't been found
+												sender.sendMessage("Permission not recognized: " + args[3].toUpperCase());
+											}
+										}
+									} else {
+										sender.sendMessage("Invalid number of arguments. You may specify one of the following:");
+										sender.sendMessage("/faction role setting <roleName>");
+										sender.sendMessage("/faction role setting <roleName> <prefix|postfix|[permission]> <change>");
+									}
 									return true;
 								} else if (args[1].equals("list")) {
 									sender.sendMessage("Roles for faction " + faction.getName());
