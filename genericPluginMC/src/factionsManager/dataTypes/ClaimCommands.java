@@ -1,5 +1,6 @@
 package factionsManager.dataTypes;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
+import adminManager.Devrequest;
 import genericPluginMC.GenericPlugin;
 
 public class ClaimCommands implements CommandExecutor {
@@ -159,7 +161,64 @@ public class ClaimCommands implements CommandExecutor {
 							return true;
 						}
 					} else if (args[0].equals("devrequest")) {
-						sender.sendMessage("Not yet implemented.");
+						if (args.length == 1) { // Just do the one we're in if applicable
+							Claim owner = GenericPlugin.chunkOwner(player.getLocation().getChunk());
+							if (owner == null) {
+								sender.sendMessage(
+										"You cannot request that development at this location be set because this location is not claimed.");
+								return true;
+							} else if (owner.getOwner() != faction) {
+								sender.sendMessage(
+										"You cannot request that development at this location be set because another faction owns it.");
+								return true;
+							} else {
+								for (Devrequest req : GenericPlugin.devrequests) {
+									if (req.getClaim() == owner) {
+										sender.sendMessage(
+												"There is already a devrequest on this claim: " + owner.getName());
+										return true;
+									}
+								}
+								GenericPlugin.devrequests.add(new Devrequest(owner));
+								sender.sendMessage(
+										"Sent a request that development for " + owner.getName() + " be set.");
+								GenericPlugin.saveData(GenericPlugin.getPlugin());
+								return true;
+							}
+						} else if (args.length == 2) { // Do the one specified
+							Claim owner = faction.getClaim(args[1]);
+							if (owner == null) {
+								sender.sendMessage("The claim " + args[1] + " was not recognized.");
+								return true;
+							} else {
+								for (Devrequest req : GenericPlugin.devrequests) {
+									if (req.getClaim() == owner) {
+										sender.sendMessage(
+												"There is already a devrequest on this claim: " + owner.getName());
+										return true;
+									}
+								}
+								GenericPlugin.devrequests.add(new Devrequest(owner));
+								sender.sendMessage(
+										"Sent a request that development for " + owner.getName() + " be set.");
+								GenericPlugin.saveData(GenericPlugin.getPlugin());
+								return true;
+							}
+						} else {
+							sender.sendMessage("Invalid number of arguments. /devrequest [claim]");
+							return true;
+						}
+					} else if (args[0].equals("list")) {
+						sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "======"
+								+ faction.getName().toUpperCase() + " CLAIMS======");
+						for (Claim claim : faction.getClaims()) {
+							sender.sendMessage(ChatColor.UNDERLINE.toString() + claim.getName());
+							sender.sendMessage("Chunks: " + claim.numChunks());
+							player.performCommand("tellraw @p [\"\",{\"text\":\"Development: " + claim.getDevLevel()
+									+ " \"},{\"text\":\"" + ChatColor.YELLOW.toString()
+									+ "[REQUEST DEV]\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/claim devrequest "
+									+ claim.getName() + "\"}}]");
+						}
 						return true;
 					}
 				}

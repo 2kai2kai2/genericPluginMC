@@ -6,7 +6,7 @@ prefix: GenericMC
 commands:
   faction:
     description: All player faction control commands.
-    usage: "Usage: /<command> <create|join|leave|role>"
+    usage: "Usage: /<command> <create|join|leave|role|list|help>"
     default: true
   claim:
     description: All player claim commands.
@@ -17,3 +17,8 @@ commands:
     usage: "Usage: /<command> <war|peace|ally|unally|relations|mailbox|help>"
     default: true
     alias: diplomacy
+  fadmin:
+    description: All administrative controls on faction-related things.
+    usage: "Usage: /<command> <devrequests|help>"
+    default: op
+    alias: factionadmin

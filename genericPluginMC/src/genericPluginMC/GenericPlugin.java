@@ -13,6 +13,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import adminManager.Devrequest;
+import adminManager.FAdminCommands;
 import diplomacy.AllyOfferMail;
 import diplomacy.DiploCommands;
 import diplomacy.DiploMail;
@@ -35,6 +37,7 @@ public class GenericPlugin extends JavaPlugin {
 	public static ArrayList<Faction> factions;
 	public static ArrayList<War> wars;
 	public static ArrayList<DiploMail> mail;
+	public static ArrayList<Devrequest> devrequests;
 
 	public static Faction getPlayerFaction(UUID player) {
 		for (Faction f : factions) {
@@ -79,6 +82,7 @@ public class GenericPlugin extends JavaPlugin {
 		factions = new ArrayList<Faction>();
 		wars = new ArrayList<War>();
 		mail = new ArrayList<DiploMail>();
+		devrequests = new ArrayList<Devrequest>();
 
 		config = this.getConfig();
 		config.addDefault("allow-wars", true);
@@ -93,6 +97,7 @@ public class GenericPlugin extends JavaPlugin {
 		this.getCommand("faction").setExecutor(new FactionCommands());
 		this.getCommand("claim").setExecutor(new ClaimCommands());
 		this.getCommand("diplo").setExecutor(new DiploCommands());
+		this.getCommand("fadmin").setExecutor(new FAdminCommands());
 	}
 
 	@Override
@@ -126,10 +131,15 @@ public class GenericPlugin extends JavaPlugin {
 		data.set("wars", warMaps);
 		
 		ArrayList<Map<String, Object>> mailMaps = new ArrayList<Map<String, Object>>();
-		for (DiploMail m : mail) {
+		for (DiploMail m : mail)
 			mailMaps.add(m.serialize());
-		}
 		data.set("mail", mailMaps);
+		
+		ArrayList<Map<String, Object>> devMaps = new ArrayList<Map<String, Object>>();
+		for (Devrequest d : devrequests)
+			devMaps.add(d.serialize());
+		data.set("devrequests", devMaps);
+		
 		try {
 			data.save(new File(p.getDataFolder(), "data.yml"));
 		} catch (IOException e) {
@@ -165,6 +175,13 @@ public class GenericPlugin extends JavaPlugin {
 					mail.add(new PeaceOfferMail(map));
 				else if (diffKey.equals(JoinRequestMail.diffKey))
 					mail.add(new JoinRequestMail(map));
+			}
+		}
+		
+		ArrayList<Map<String, Object>> devMaps = (ArrayList<Map<String, Object>>) data.get("devrequests");
+		if (devMaps != null) {
+			for (Map<String, Object> map : devMaps) {
+				devrequests.add(new Devrequest(map));
 			}
 		}
 	}

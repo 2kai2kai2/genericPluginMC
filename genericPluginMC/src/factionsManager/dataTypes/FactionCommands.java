@@ -385,8 +385,7 @@ public class FactionCommands implements CommandExecutor {
 									if (args.length == 2) {
 										sender.sendMessage("You must specify a role to view or change.");
 										return true;
-									}
-									if (args.length == 3) {
+									} else if (args.length == 3) {
 										FactionRole spec = faction.getRole(args[2]);
 										// Check that the role exists
 										if (spec == null) {
