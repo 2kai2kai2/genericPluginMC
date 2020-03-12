@@ -21,13 +21,13 @@ public class War implements ConfigurationSerializable {
 		defenders.add(defender);
 		setName(name);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public War(Map<String, Object> map) {
 		this.setName((String) map.get("name"));
 		ArrayList<String> attackerNames = (ArrayList<String>) map.get("attackers");
 		ArrayList<String> defenderNames = (ArrayList<String>) map.get("defenders");
-		
+
 		for (String aName : attackerNames) {
 			Faction faction = GenericPlugin.factionFromName(aName);
 			if (faction != null)
@@ -55,7 +55,7 @@ public class War implements ConfigurationSerializable {
 	public ArrayList<Faction> getDefenders() {
 		return defenders;
 	}
-	
+
 	public ArrayList<Faction> getEnemies(Faction faction) {
 		if (getAttackers().contains(faction))
 			return getDefenders();
@@ -64,7 +64,7 @@ public class War implements ConfigurationSerializable {
 		else
 			return new ArrayList<Faction>();
 	}
-	
+
 	public boolean isInvolved(Faction faction) {
 		return getAttackers().contains(faction) || getDefenders().contains(faction);
 	}

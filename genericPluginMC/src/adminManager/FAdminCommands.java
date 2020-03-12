@@ -80,7 +80,7 @@ public class FAdminCommands implements CommandExecutor {
 										if (GenericPlugin.devrequests.get(i).getClaim() == possible.get(0))
 											GenericPlugin.devrequests.remove(i);
 									}
-									this.onCommand(sender, command, label, new String[]{"devrequests"});
+									this.onCommand(sender, command, label, new String[] { "devrequests" });
 									GenericPlugin.saveData(GenericPlugin.getPlugin());
 									return true;
 								} else {
@@ -126,7 +126,7 @@ public class FAdminCommands implements CommandExecutor {
 											if (GenericPlugin.devrequests.get(i).getClaim() == claim)
 												GenericPlugin.devrequests.remove(i);
 										}
-										this.onCommand(sender, command, label, new String[]{"devrequests"});
+										this.onCommand(sender, command, label, new String[] { "devrequests" });
 										GenericPlugin.saveData(GenericPlugin.getPlugin());
 										return true;
 									} else {

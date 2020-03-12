@@ -48,7 +48,8 @@ public class JoinRequestMail extends DiploMail {
 						.sendMessage("Your request to join " + getRecipient().getName() + " has been approved.");
 			}
 		}
-		// Delete this and all other join requests for this player so that they can't join 2 factions
+		// Delete this and all other join requests for this player so that they can't
+		// join 2 factions
 		for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
 			DiploMail mail = GenericPlugin.mail.get(i);
 			if (mail instanceof JoinRequestMail && ((JoinRequestMail) mail).getPlayer().equals(this.getPlayer()))

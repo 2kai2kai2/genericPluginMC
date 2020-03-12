@@ -147,9 +147,10 @@ public class FactionCommands implements CommandExecutor {
 						}
 					} else if (args[0].equals("list")) {
 						if (args.length == 1) { // List all the factions
-							sender.sendMessage("FACTIONS:");
+							sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
+									+ "======FACTIONS======");
 							for (Faction faction : GenericPlugin.factions) {
-								sender.sendMessage("- " + faction.getName() + ": Members: "
+								sender.sendMessage(ChatColor.UNDERLINE.toString() + faction.getName() + ": Members: "
 										+ faction.getMembers().size() + " Claims: " + faction.getClaims().size());
 							}
 							return true;
@@ -167,7 +168,8 @@ public class FactionCommands implements CommandExecutor {
 								sender.sendMessage("The faction you entered was not recognized: " + factionName);
 								return true;
 							} else {
-								sender.sendMessage(faction.getName() + ":");
+								sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "======"
+										+ faction.getName() + "======");
 								for (FactionMember member : faction.getMembers()) {
 									OfflinePlayer memberPlayer = player.getServer()
 											.getOfflinePlayer(member.getPlayer());
@@ -398,7 +400,7 @@ public class FactionCommands implements CommandExecutor {
 													ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
 															+ "======" + spec.getName().toUpperCase() + "======");
 											sender.sendMessage(ChatColor.UNDERLINE.toString() + "Display name: "
-													+ ChatColor.RESET.toString() + spec.getPrefix() + "[USERNAME]"
+													+ ChatColor.RESET.toString() + spec.getPrefix() + "[PLAYER]"
 													+ spec.getPostfix());
 											String permStr = ChatColor.UNDERLINE.toString() + "Permissions:"
 													+ ChatColor.RESET.toString();
@@ -422,45 +424,54 @@ public class FactionCommands implements CommandExecutor {
 										} else {
 											if (args[3].equalsIgnoreCase("prefix")) {
 												spec.setPrefix(changeStr);
-												sender.sendMessage("Changed prefix for " + spec.getName() + " to: " + changeStr);
+												sender.sendMessage(
+														"Changed prefix for " + spec.getName() + " to: " + changeStr);
 												return true;
 											} else if (args[3].equalsIgnoreCase("postfix")) {
 												spec.setPostfix(" " + changeStr.trim());
-												sender.sendMessage("Changed postfix for " + spec.getName() + " to: " + changeStr);
+												sender.sendMessage(
+														"Changed postfix for " + spec.getName() + " to: " + changeStr);
 												return true;
 											} else {
 												boolean change;
-												if (changeStr.trim().equalsIgnoreCase("true") || changeStr.trim().equalsIgnoreCase("yes"))
+												if (changeStr.trim().equalsIgnoreCase("true")
+														|| changeStr.trim().equalsIgnoreCase("yes"))
 													change = true;
-												else if (changeStr.trim().equalsIgnoreCase("false") || changeStr.trim().equalsIgnoreCase("no"))
+												else if (changeStr.trim().equalsIgnoreCase("false")
+														|| changeStr.trim().equalsIgnoreCase("no"))
 													change = false;
 												else {
 													sender.sendMessage("Boolean argument not recognized: " + changeStr);
 													return true;
 												}
-												
+
 												for (RolePerms perm : RolePerms.values()) {
 													if (perm.toString().equalsIgnoreCase(args[3])) {
 														if (change == true)
 															spec.givePerm(perm);
 														else // change == false
 															spec.removePerm(perm);
-														sender.sendMessage("Changed permission " + perm.toString() + " to " + change);
+														sender.sendMessage("Changed permission " + perm.toString()
+																+ " to " + change);
 														return true;
 													}
 												}
 												// Getting here means that the perm hasn't been found
-												sender.sendMessage("Permission not recognized: " + args[3].toUpperCase());
+												sender.sendMessage(
+														"Permission not recognized: " + args[3].toUpperCase());
 											}
 										}
 									} else {
-										sender.sendMessage("Invalid number of arguments. You may specify one of the following:");
+										sender.sendMessage(
+												"Invalid number of arguments. You may specify one of the following:");
 										sender.sendMessage("/faction role setting <roleName>");
-										sender.sendMessage("/faction role setting <roleName> <prefix|postfix|[permission]> <change>");
+										sender.sendMessage(
+												"/faction role setting <roleName> <prefix|postfix|[permission]> <change>");
 									}
 									return true;
 								} else if (args[1].equals("list")) {
-									sender.sendMessage("Roles for faction " + faction.getName());
+									sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
+											+ "======" + faction.getName() + " ROLES======");
 									for (FactionRole role : faction.getRoles()) {
 										String roleStr = "- " + role.getName() + " | Naming: " + role.getPrefix()
 												+ "[PLAYER]" + role.getPostfix() + " | Permissions:";
@@ -474,7 +485,8 @@ public class FactionCommands implements CommandExecutor {
 									}
 									return true;
 								} else if (args[1].equals("help")) { // Subcommand role help
-									sender.sendMessage("========FACTION ROLE HELP========");
+									sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
+											+ "========FACTION ROLE HELP========");
 									sender.sendMessage("/faction role add <roleName>");
 									sender.sendMessage("/faction role delete <roleName>");
 									sender.sendMessage("/faction role give <player> <roleName>");

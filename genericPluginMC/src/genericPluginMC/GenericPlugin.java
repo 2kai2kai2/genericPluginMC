@@ -129,17 +129,17 @@ public class GenericPlugin extends JavaPlugin {
 		for (War w : wars)
 			warMaps.add(w.serialize());
 		data.set("wars", warMaps);
-		
+
 		ArrayList<Map<String, Object>> mailMaps = new ArrayList<Map<String, Object>>();
 		for (DiploMail m : mail)
 			mailMaps.add(m.serialize());
 		data.set("mail", mailMaps);
-		
+
 		ArrayList<Map<String, Object>> devMaps = new ArrayList<Map<String, Object>>();
 		for (Devrequest d : devrequests)
 			devMaps.add(d.serialize());
 		data.set("devrequests", devMaps);
-		
+
 		try {
 			data.save(new File(p.getDataFolder(), "data.yml"));
 		} catch (IOException e) {
@@ -177,7 +177,7 @@ public class GenericPlugin extends JavaPlugin {
 					mail.add(new JoinRequestMail(map));
 			}
 		}
-		
+
 		ArrayList<Map<String, Object>> devMaps = (ArrayList<Map<String, Object>>) data.get("devrequests");
 		if (devMaps != null) {
 			for (Map<String, Object> map : devMaps) {

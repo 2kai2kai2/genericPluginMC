@@ -220,6 +220,16 @@ public class ClaimCommands implements CommandExecutor {
 									+ claim.getName() + "\"}}]");
 						}
 						return true;
+					} else if (args[0].equals("help")) {
+						sender.sendMessage(
+								ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "======CLAIMS HELP======");
+						sender.sendMessage("/claim new <name>");
+						sender.sendMessage("/claim delete <name>");
+						sender.sendMessage("/claim chunk <name>");
+						sender.sendMessage("/claim unchunk <name>");
+						sender.sendMessage("/claim devrequest [name]");
+						sender.sendMessage("/claim list");
+						sender.sendMessage("/claim help");
 					}
 				}
 			}

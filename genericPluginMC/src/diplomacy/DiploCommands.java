@@ -61,10 +61,10 @@ public class DiploCommands implements CommandExecutor {
 										sender.sendMessage("You cannot declare war on " + dipFaction.getName()
 												+ " because you are currently allied with them.");
 										return true;
-									} /*
-										 * else if (faction == dipFaction) {
-										 * sender.sendMessage("You cannot declare war upon yourself."); return true; }
-										 */else {
+									} else if (faction == dipFaction) {
+										sender.sendMessage("You cannot declare war upon yourself.");
+										return true;
+									} else {
 										GenericPlugin.wars.add(new War(faction, dipFaction,
 												faction.getName() + " war against " + dipFaction.getName()));
 										sender.sendMessage("Declared war on " + dipFaction.getName());
@@ -160,10 +160,10 @@ public class DiploCommands implements CommandExecutor {
 												"You cannot send an alliance request to " + dipFaction.getName()
 														+ " because you are currently at war with them.");
 										return true;
-									} /*
-										 * else if (faction == dipFaction) {
-										 * sender.sendMessage("You cannot ally yourself."); return true; }
-										 */else {
+									} else if (faction == dipFaction) {
+										sender.sendMessage("You cannot ally yourself.");
+										return true;
+									} else {
 										GenericPlugin.mail.add(new AllyOfferMail(faction, dipFaction));
 										sender.sendMessage("Send alliance offer to " + dipFaction.getName());
 										GenericPlugin.saveData(GenericPlugin.getPlugin());
@@ -225,10 +225,10 @@ public class DiploCommands implements CommandExecutor {
 					} else if (args[0].equals("relations")) {
 						sender.sendMessage(ChatColor.UNDERLINE.toString() + ChatColor.BOLD.toString() + "======"
 								+ faction.getName().toUpperCase() + "======");
-						sender.sendMessage(ChatColor.UNDERLINE.toString() + "At war:");
+						sender.sendMessage(ChatColor.UNDERLINE.toString() + ChatColor.RED.toString() + "At war:");
 						for (Faction enemy : faction.getWarEnemies())
 							sender.sendMessage(enemy.getName());
-						sender.sendMessage(ChatColor.UNDERLINE.toString() + "Allied:");
+						sender.sendMessage(ChatColor.UNDERLINE.toString() + ChatColor.GREEN.toString() + "Allied:");
 						for (Faction ally : faction.getAllies())
 							sender.sendMessage(ally.getName());
 						return true;
@@ -265,7 +265,8 @@ public class DiploCommands implements CommandExecutor {
 						}
 						return true;
 					} else if (args[0].equals("help")) {
-						sender.sendMessage("======DIPLOMATIC HELP======");
+						sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
+								+ "======DIPLOMATIC HELP======");
 						sender.sendMessage("/diplo war <faction>");
 						sender.sendMessage("/diplo peace <faction>");
 						sender.sendMessage("/diplo ally <faction>");

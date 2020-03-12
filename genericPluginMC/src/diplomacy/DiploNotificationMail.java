@@ -16,7 +16,7 @@ public class DiploNotificationMail extends DiploMail {
 	public DiploNotificationMail(Map<String, Object> map) {
 		super(map);
 	}
-	
+
 	@Override
 	public String diffKey() {
 		return DiploNotificationMail.diffKey;

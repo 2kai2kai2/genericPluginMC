@@ -126,14 +126,8 @@ public class Faction implements ConfigurationSerializable {
 	public int maxFreeClaims() {
 		return (int) (1.5 * Math.sqrt(getMembers().size()));
 		/*
-		 * 1 -> 1
-		 * 2 -> 2
-		 * 4 -> 3
-		 * 8 -> 4
-		 * 12-> 5
-		 * 16-> 6
-		 * 22-> 7
-		 * etc. increasing over time the number of players needed to gain another free claim.
+		 * 1 -> 1; 2 -> 2; 4 -> 3; 8 -> 4; 12-> 5; 16-> 6; 22-> 7; etc. increasing over
+		 * time the number of players needed to gain another free claim.
 		 */
 	}
 
@@ -192,7 +186,7 @@ public class Faction implements ConfigurationSerializable {
 	public void sendNotifMail(Faction recipient, String title, String message) {
 		GenericPlugin.mail.add(new DiploNotificationMail(title, this, recipient, message));
 	}
-	
+
 	public boolean canPlayerModify(Player p) {
 		Faction f = GenericPlugin.getPlayerFaction(p);
 		return f == this || this.getWarEnemies().contains(f);
