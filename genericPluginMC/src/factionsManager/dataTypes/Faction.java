@@ -189,7 +189,7 @@ public class Faction implements ConfigurationSerializable {
 
 	public boolean canPlayerModify(Player p) {
 		Faction f = GenericPlugin.getPlayerFaction(p);
-		return f == this || this.getWarEnemies().contains(f);
+		return f == this || (this.getWarEnemies().contains(f) && this.hasMemberOnline());
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 name: GenericPlugin
 main: genericPluginMC.GenericPlugin
 version: 1.0
+api-version: 1.15
 author: 2kai2kai2
 prefix: GenericMC
 commands:
