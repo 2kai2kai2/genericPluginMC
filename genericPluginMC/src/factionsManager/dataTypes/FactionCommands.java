@@ -61,12 +61,7 @@ public class FactionCommands implements CommandExecutor {
 
 							Faction faction = new Faction(((HumanEntity) sender).getUniqueId(), factionName);
 							GenericPlugin.factions.add(faction);
-							player.setDisplayName(
-									faction.getMember(player.getUniqueId()).topRole().getPrefix() + player.getName()
-											+ faction.getMember(player.getUniqueId()).topRole().getPostfix());
-							player.setPlayerListName(
-									faction.getMember(player.getUniqueId()).topRole().getPrefix() + player.getName()
-											+ faction.getMember(player.getUniqueId()).topRole().getPostfix());
+							GenericPlugin.updateDisplayNames();
 							// Delete any other faction join requests
 							for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
 								DiploMail mail = GenericPlugin.mail.get(i);
@@ -102,6 +97,7 @@ public class FactionCommands implements CommandExecutor {
 											player.getDisplayName() + " request to join " + f.getName(),
 											player.getUniqueId(), f));
 									GenericPlugin.saveData(GenericPlugin.getPlugin());
+									GenericPlugin.updateDisplayNames();
 									return true;
 								}
 							}
@@ -115,32 +111,39 @@ public class FactionCommands implements CommandExecutor {
 					} else if (args[0].equals("leave")) {
 						if (args.length == 1) {
 							Faction faction = GenericPlugin.getPlayerFaction(player);
-							faction.removePlayer(player);
-							sender.sendMessage("Left faction: " + faction.getName());
-							if (faction.getMembers().size() == 0) {
-								sender.sendMessage("Dissolved faction due to lack of members: " + faction.getName());
-								GenericPlugin.factions.remove(faction);
+							if (faction != null) {
+								faction.removePlayer(player);
+								sender.sendMessage("Left faction: " + faction.getName());
+								if (faction.getMembers().size() == 0) {
+									sender.sendMessage(
+											"Dissolved faction due to lack of members: " + faction.getName());
+									GenericPlugin.factions.remove(faction);
 
-								// Dissolve any wars that this is a leader in or remove it from ones it is
-								// participating in
-								for (int i = GenericPlugin.wars.size() - 1; i >= 0; i--) {
-									War w = GenericPlugin.wars.get(i);
-									if (w.getDefenders().get(0) == faction || w.getAttackers().get(0) == faction) {
-										GenericPlugin.wars.remove(i);
-									} else if (w.getDefenders().contains(faction))
-										w.getDefenders().remove(faction);
-									else if (w.getAttackers().contains(faction))
-										w.getAttackers().remove(faction);
-								}
+									// Dissolve any wars that this is a leader in or remove it from ones it is
+									// participating in
+									for (int i = GenericPlugin.wars.size() - 1; i >= 0; i--) {
+										War w = GenericPlugin.wars.get(i);
+										if (w.getDefenders().get(0) == faction || w.getAttackers().get(0) == faction) {
+											GenericPlugin.wars.remove(i);
+										} else if (w.getDefenders().contains(faction))
+											w.getDefenders().remove(faction);
+										else if (w.getAttackers().contains(faction))
+											w.getAttackers().remove(faction);
+									}
 
-								// Remove any mail sent to this faction
-								for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
-									if (GenericPlugin.mail.get(i).getRecipient() == faction)
-										GenericPlugin.mail.remove(i);
+									// Remove any mail sent to this faction
+									for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
+										if (GenericPlugin.mail.get(i).getRecipient() == faction)
+											GenericPlugin.mail.remove(i);
+									}
 								}
+								GenericPlugin.saveData(GenericPlugin.getPlugin());
+								GenericPlugin.updateDisplayNames();
+								return true;
+							} else {
+								sender.sendMessage("You cannot leave a faction if you are not in one.");
+								return true;
 							}
-							GenericPlugin.saveData(GenericPlugin.getPlugin());
-							return true;
 						} else {
 							sender.sendMessage("Too many arguments. Did you mean \"/faction leave\"?");
 							return true;
@@ -294,6 +297,7 @@ public class FactionCommands implements CommandExecutor {
 														sender.sendMessage("Gave player " + oPlayer.getName()
 																+ " role: " + role.getName());
 														GenericPlugin.saveData(GenericPlugin.getPlugin());
+														GenericPlugin.updateDisplayNames();
 														return true;
 													}
 												}
@@ -356,6 +360,7 @@ public class FactionCommands implements CommandExecutor {
 														sender.sendMessage("Removed from player " + oPlayer.getName()
 																+ " role: " + role.getName());
 														GenericPlugin.saveData(GenericPlugin.getPlugin());
+														GenericPlugin.updateDisplayNames();
 														return true;
 													}
 												}
@@ -426,11 +431,13 @@ public class FactionCommands implements CommandExecutor {
 												spec.setPrefix(changeStr);
 												sender.sendMessage(
 														"Changed prefix for " + spec.getName() + " to: " + changeStr);
+												GenericPlugin.saveData(GenericPlugin.getPlugin());
 												return true;
 											} else if (args[3].equalsIgnoreCase("postfix")) {
 												spec.setPostfix(" " + changeStr.trim());
 												sender.sendMessage(
 														"Changed postfix for " + spec.getName() + " to: " + changeStr);
+												GenericPlugin.saveData(GenericPlugin.getPlugin());
 												return true;
 											} else {
 												boolean change;
@@ -453,6 +460,7 @@ public class FactionCommands implements CommandExecutor {
 															spec.removePerm(perm);
 														sender.sendMessage("Changed permission " + perm.toString()
 																+ " to " + change);
+														GenericPlugin.saveData(GenericPlugin.getPlugin());
 														return true;
 													}
 												}
@@ -490,7 +498,7 @@ public class FactionCommands implements CommandExecutor {
 									sender.sendMessage("/faction role add <roleName>");
 									sender.sendMessage("/faction role delete <roleName>");
 									sender.sendMessage("/faction role give <player> <roleName>");
-									sender.sendMessage("/faction role delete <player> <roleName>");
+									sender.sendMessage("/faction role remove <player> <roleName>");
 									sender.sendMessage("/faction role setting <roleName> [setting] [change]");
 									sender.sendMessage("/faction role list");
 									sender.sendMessage("/faction role help");

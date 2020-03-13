@@ -119,6 +119,25 @@ public class GenericPlugin extends JavaPlugin {
 		return null;
 	}
 
+	public static void updateDisplayNames() {
+		for (Player player : getPlugin().getServer().getOnlinePlayers()) {
+			Faction faction = getPlayerFaction(player);
+			String displayName;
+			if (faction == null) {
+				displayName = player.getName() + " the Homeless";
+			} else {
+				FactionMember member = faction.getMember(player.getUniqueId());
+				FactionRole topRole = member.topRole();
+				if (topRole == null) // Member has no roles
+					displayName = player.getName() + " of " + faction.getName();
+				else
+					displayName = topRole.getPrefix() + player.getName() + topRole.getPostfix();
+			}
+			player.setDisplayName(displayName);
+			player.setPlayerListName(displayName);
+		}
+	}
+
 	public static void saveData(JavaPlugin p) {
 		ArrayList<Map<String, Object>> factionMaps = new ArrayList<Map<String, Object>>();
 		for (Faction f : factions)

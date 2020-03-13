@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import genericPluginMC.GenericPlugin;
+
 public class FactionRole implements ConfigurationSerializable {
 
 	private String prefix;
@@ -39,6 +41,7 @@ public class FactionRole implements ConfigurationSerializable {
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
+		GenericPlugin.updateDisplayNames();
 	}
 
 	public String getPostfix() {
@@ -47,6 +50,7 @@ public class FactionRole implements ConfigurationSerializable {
 
 	public void setPostfix(String postfix) {
 		this.postfix = postfix;
+		GenericPlugin.updateDisplayNames();
 	}
 
 	public String getName() {
