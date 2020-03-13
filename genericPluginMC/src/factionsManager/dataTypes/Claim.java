@@ -98,25 +98,9 @@ public class Claim implements ConfigurationSerializable {
 				|| hasChunk(chunk.getWorld().getChunkAt(x, z + 1)) || hasChunk(chunk.getWorld().getChunkAt(x, z - 1));
 	}
 
-	public Faction getOwner() {
-		return owner;
-	}
-
-	public void setOwner(Faction owner) {
-		this.owner = owner;
-	}
-
 	public static boolean chunksEqual(Chunk a, Chunk b) {
 		return a.getWorld().getUID().compareTo(b.getWorld().getUID()) == 0 && a.getX() == b.getX()
 				&& a.getZ() == b.getZ();
-	}
-
-	public int getDevLevel() {
-		return devLevel;
-	}
-
-	public void setDevLevel(int devLevel) {
-		this.devLevel = devLevel;
 	}
 
 	public int maxChunks() {
@@ -127,6 +111,22 @@ public class Claim implements ConfigurationSerializable {
 
 	public int numChunks() {
 		return getChunks().size();
+	}
+
+	public Faction getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Faction owner) {
+		this.owner = owner;
+	}
+
+	public int getDevLevel() {
+		return devLevel;
+	}
+
+	public void setDevLevel(int devLevel) {
+		this.devLevel = devLevel;
 	}
 
 	public String getName() {

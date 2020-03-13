@@ -7,8 +7,6 @@ import genericPluginMC.GenericPlugin;
 
 public class PeaceOfferMail extends DiploMail {
 
-	public static final String diffKey = "PeaceOfferMail";
-
 	public PeaceOfferMail(Faction sender, Faction recipient) {
 		super(sender.getName() + " peace offer to " + recipient.getName(), sender, recipient);
 		setDescription(sender.getName() + " wants peace with " + recipient.getName() + ". Shall we accept?");
@@ -126,6 +124,8 @@ public class PeaceOfferMail extends DiploMail {
 		GenericPlugin.mail.remove(this);
 		GenericPlugin.saveData(GenericPlugin.getPlugin());
 	}
+
+	public static final String diffKey = "PeaceOfferMail";
 
 	@Override
 	public String diffKey() {

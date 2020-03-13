@@ -31,6 +31,10 @@ public class FactionMember implements ConfigurationSerializable {
 		return roles;
 	}
 
+	public FactionRole topRole() {
+		return getFaction().topRole(getRoles());
+	}
+
 	public boolean addRole(FactionRole role) {
 		if (!getRoles().contains(role)) {
 			roles.add(role);
@@ -53,10 +57,6 @@ public class FactionMember implements ConfigurationSerializable {
 
 	public Faction getFaction() {
 		return faction;
-	}
-
-	public FactionRole topRole() {
-		return getFaction().topRole(getRoles());
 	}
 
 	public boolean hasPerm(RolePerms perm) {

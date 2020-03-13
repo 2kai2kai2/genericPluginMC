@@ -65,6 +65,14 @@ public class Faction implements ConfigurationSerializable {
 		}
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public ArrayList<FactionMember> getMembers() {
 		return members;
 	}
@@ -78,8 +86,36 @@ public class Faction implements ConfigurationSerializable {
 		return null;
 	}
 
+	public void addPlayer(OfflinePlayer p) {
+		if (getMember(p.getUniqueId()) == null) {
+			FactionMember member = new FactionMember(this, p.getUniqueId());
+			member.addRole(getRoles().get(getRoles().size() - 1));
+			getMembers().add(member);
+		}
+	}
+
+	public void removePlayer(OfflinePlayer p) {
+		getMembers().remove(getMember(p.getUniqueId()));
+	}
+
+	public boolean hasMemberOnline() {
+		for (Player p : GenericPlugin.getPlugin().getServer().getOnlinePlayers()) {
+			if (getMember(p.getUniqueId()) != null)
+				return true;
+		}
+		return false;
+	}
+
 	public ArrayList<FactionRole> getRoles() {
 		return roles;
+	}
+
+	public FactionRole getRole(String name) {
+		for (FactionRole role : getRoles()) {
+			if (role.getName().equalsIgnoreCase(name))
+				return role;
+		}
+		return null;
 	}
 
 	public FactionRole topRole(ArrayList<FactionRole> roleList) {
@@ -95,30 +131,10 @@ public class Faction implements ConfigurationSerializable {
 		return claims;
 	}
 
-	public void addPlayer(OfflinePlayer p) {
-		if (getMember(p.getUniqueId()) == null) {
-			FactionMember member = new FactionMember(this, p.getUniqueId());
-			member.addRole(getRoles().get(getRoles().size() - 1));
-			getMembers().add(member);
-		}
-	}
-
-	public void removePlayer(OfflinePlayer p) {
-		getMembers().remove(getMember(p.getUniqueId()));
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public FactionRole getRole(String name) {
-		for (FactionRole role : getRoles()) {
-			if (role.getName().equalsIgnoreCase(name))
-				return role;
+	public Claim getClaim(String name) {
+		for (Claim c : getClaims()) {
+			if (c.getName().equalsIgnoreCase(name))
+				return c;
 		}
 		return null;
 	}
@@ -140,22 +156,6 @@ public class Faction implements ConfigurationSerializable {
 		return num;
 	}
 
-	public Claim getClaim(String name) {
-		for (Claim c : getClaims()) {
-			if (c.getName().equalsIgnoreCase(name))
-				return c;
-		}
-		return null;
-	}
-
-	public boolean hasMemberOnline() {
-		for (Player p : GenericPlugin.getPlugin().getServer().getOnlinePlayers()) {
-			if (getMember(p.getUniqueId()) != null)
-				return true;
-		}
-		return false;
-	}
-
 	public ArrayList<War> getWars() {
 		ArrayList<War> wars = new ArrayList<War>();
 		for (War w : GenericPlugin.wars) {
@@ -174,6 +174,11 @@ public class Faction implements ConfigurationSerializable {
 		return enemies;
 	}
 
+	public boolean canPlayerModify(Player p) {
+		Faction f = GenericPlugin.getPlayerFaction(p);
+		return f == this || (this.getWarEnemies().contains(f) && this.hasMemberOnline());
+	}
+
 	public ArrayList<Faction> getAllies() {
 		return allies;
 	}
@@ -185,11 +190,6 @@ public class Faction implements ConfigurationSerializable {
 
 	public void sendNotifMail(Faction recipient, String title, String message) {
 		GenericPlugin.mail.add(new DiploNotificationMail(title, this, recipient, message));
-	}
-
-	public boolean canPlayerModify(Player p) {
-		Faction f = GenericPlugin.getPlayerFaction(p);
-		return f == this || (this.getWarEnemies().contains(f) && this.hasMemberOnline());
 	}
 
 	@Override

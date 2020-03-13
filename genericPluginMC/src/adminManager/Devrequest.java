@@ -24,15 +24,15 @@ public class Devrequest implements ConfigurationSerializable {
 		}
 	}
 
+	public Claim getClaim() {
+		return claim;
+	}
+
 	@Override
 	public Map<String, Object> serialize() {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("faction", getClaim().getOwner().getName());
 		map.put("claim", getClaim().getName());
 		return map;
-	}
-
-	public Claim getClaim() {
-		return claim;
 	}
 }

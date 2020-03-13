@@ -12,7 +12,6 @@ import genericPluginMC.GenericPlugin;
 
 public class JoinRequestMail extends DiploMail {
 
-	public static final String diffKey = "JoinRequestMail";
 	private UUID player;
 
 	public JoinRequestMail(String title, UUID sender, Faction recipient) {
@@ -31,11 +30,6 @@ public class JoinRequestMail extends DiploMail {
 
 	public UUID getPlayer() {
 		return player;
-	}
-
-	@Override
-	public String diffKey() {
-		return diffKey;
 	}
 
 	public void approve() {
@@ -65,6 +59,13 @@ public class JoinRequestMail extends DiploMail {
 					.sendMessage("Your request to join " + getRecipient().getName() + " has been rejected.");
 		GenericPlugin.mail.remove(this);
 		GenericPlugin.saveData(GenericPlugin.getPlugin());
+	}
+
+	public static final String diffKey = "JoinRequestMail";
+
+	@Override
+	public String diffKey() {
+		return diffKey;
 	}
 
 	@Override
