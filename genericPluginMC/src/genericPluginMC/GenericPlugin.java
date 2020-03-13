@@ -39,60 +39,27 @@ public class GenericPlugin extends JavaPlugin {
 	public static ArrayList<DiploMail> mail;
 	public static ArrayList<Devrequest> devrequests;
 
-	public static Faction getPlayerFaction(UUID player) {
-		for (Faction f : factions) {
-			for (FactionMember m : f.getMembers()) {
-				if (player.compareTo(m.getPlayer()) == 0) {
-					return f;
-				}
-			}
-		}
-		return null;
-	}
-
-	public static Faction getPlayerFaction(Player player) {
-		return getPlayerFaction(player.getUniqueId());
-	}
-
-	public static Faction factionFromName(String name) {
-		for (Faction f : factions) {
-			if (f.getName().equalsIgnoreCase(name)) {
-				return f;
-			}
-		}
-		return null;
-	}
-
-	public static ArrayList<DiploMail> recievedMail(Faction f) {
-		ArrayList<DiploMail> recMail = new ArrayList<DiploMail>();
-		for (DiploMail m : mail) {
-			if (m.getRecipient() == f)
-				recMail.add(m);
-		}
-		return recMail;
-	}
-
 	@Override
 	public void onEnable() {
 		ConfigurationSerialization.registerClass(Faction.class);
 		ConfigurationSerialization.registerClass(FactionRole.class);
 		ConfigurationSerialization.registerClass(FactionMember.class);
 		ConfigurationSerialization.registerClass(Claim.class);
-
+	
 		factions = new ArrayList<Faction>();
 		wars = new ArrayList<War>();
 		mail = new ArrayList<DiploMail>();
 		devrequests = new ArrayList<Devrequest>();
-
+	
 		config = this.getConfig();
 		config.addDefault("allow-wars", true);
 		config.options().copyDefaults(true);
 		this.saveDefaultConfig();
-
+	
 		this.saveResource("data.yml", false);
 		data = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "data.yml"));
 		loadData(getPlugin());
-
+	
 		getServer().getPluginManager().registerEvents(new Events(), this);
 		this.getCommand("faction").setExecutor(new FactionCommands());
 		this.getCommand("claim").setExecutor(new ClaimCommands());
@@ -109,6 +76,30 @@ public class GenericPlugin extends JavaPlugin {
 		return getPlugin(GenericPlugin.class);
 	}
 
+	public static Faction factionFromName(String name) {
+		for (Faction f : factions) {
+			if (f.getName().equalsIgnoreCase(name)) {
+				return f;
+			}
+		}
+		return null;
+	}
+
+	public static Faction getPlayerFaction(UUID player) {
+		for (Faction f : factions) {
+			for (FactionMember m : f.getMembers()) {
+				if (player.compareTo(m.getPlayer()) == 0) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static Faction getPlayerFaction(Player player) {
+		return getPlayerFaction(player.getUniqueId());
+	}
+
 	public static Claim chunkOwner(Chunk chunk) {
 		for (Faction f : factions) {
 			for (Claim c : f.getClaims()) {
@@ -117,6 +108,15 @@ public class GenericPlugin extends JavaPlugin {
 			}
 		}
 		return null;
+	}
+
+	public static ArrayList<DiploMail> recievedMail(Faction f) {
+		ArrayList<DiploMail> recMail = new ArrayList<DiploMail>();
+		for (DiploMail m : mail) {
+			if (m.getRecipient() == f)
+				recMail.add(m);
+		}
+		return recMail;
 	}
 
 	public static void updateDisplayNames() {
