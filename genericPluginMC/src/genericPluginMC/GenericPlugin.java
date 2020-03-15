@@ -15,19 +15,23 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import adminManager.Devrequest;
 import adminManager.FAdminCommands;
+import adminManager.FAdminTabCompleter;
 import diplomacy.AllyOfferMail;
 import diplomacy.DiploCommands;
 import diplomacy.DiploMail;
 import diplomacy.DiploNotificationMail;
+import diplomacy.DiploTabCompleter;
 import diplomacy.JoinRequestMail;
 import diplomacy.PeaceOfferMail;
 import diplomacy.War;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.ClaimCommands;
+import factionsManager.dataTypes.ClaimTabCompleter;
 import factionsManager.dataTypes.Faction;
 import factionsManager.dataTypes.FactionCommands;
 import factionsManager.dataTypes.FactionMember;
 import factionsManager.dataTypes.FactionRole;
+import factionsManager.dataTypes.FactionTabCompleter;
 
 public class GenericPlugin extends JavaPlugin {
 
@@ -38,19 +42,25 @@ public class GenericPlugin extends JavaPlugin {
 	public static ArrayList<War> wars;
 	public static ArrayList<DiploMail> mail;
 	public static ArrayList<Devrequest> devrequests;
+	public static ArrayList<Player> claimOverrides;
 
 	@Override
 	public void onEnable() {
+		// Serialization
 		ConfigurationSerialization.registerClass(Faction.class);
 		ConfigurationSerialization.registerClass(FactionRole.class);
 		ConfigurationSerialization.registerClass(FactionMember.class);
 		ConfigurationSerialization.registerClass(Claim.class);
-	
+		ConfigurationSerialization.registerClass(War.class);
+		
+		// Initialize arrays
 		factions = new ArrayList<Faction>();
 		wars = new ArrayList<War>();
 		mail = new ArrayList<DiploMail>();
 		devrequests = new ArrayList<Devrequest>();
+		claimOverrides = new ArrayList<Player>();
 	
+		// Configs
 		config = this.getConfig();
 		config.addDefault("allow-wars", true);
 		config.options().copyDefaults(true);
@@ -60,11 +70,18 @@ public class GenericPlugin extends JavaPlugin {
 		data = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "data.yml"));
 		loadData(getPlugin());
 	
+		// Events
 		getServer().getPluginManager().registerEvents(new Events(), this);
+		
+		// Commands
 		this.getCommand("faction").setExecutor(new FactionCommands());
+		this.getCommand("faction").setTabCompleter(new FactionTabCompleter());
 		this.getCommand("claim").setExecutor(new ClaimCommands());
+		this.getCommand("claim").setTabCompleter(new ClaimTabCompleter());
 		this.getCommand("diplo").setExecutor(new DiploCommands());
+		this.getCommand("diplo").setTabCompleter(new DiploTabCompleter());
 		this.getCommand("fadmin").setExecutor(new FAdminCommands());
+		this.getCommand("fadmin").setTabCompleter(new FAdminTabCompleter());
 	}
 
 	@Override

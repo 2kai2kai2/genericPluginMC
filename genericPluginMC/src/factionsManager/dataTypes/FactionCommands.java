@@ -416,58 +416,64 @@ public class FactionCommands implements CommandExecutor {
 											sender.sendMessage(permStr);
 										}
 									} else if (args.length >= 5) {
-										FactionRole spec = faction.getRole(args[2]);
-										String changeStr = "";
-										for (int i = 4; i < args.length; i++)
-											changeStr += args[i] + " ";
-										// Check that the role exists
-										if (spec == null) {
-											sender.sendMessage(
-													"The role you specified was not recognized for this faction: "
-															+ args[2]);
-											return true;
-										} else {
-											if (args[3].equalsIgnoreCase("prefix")) {
-												spec.setPrefix(changeStr);
+										if (facMember.hasPerm(RolePerms.ROLECONTROL)) {
+											FactionRole spec = faction.getRole(args[2]);
+											String changeStr = "";
+											for (int i = 4; i < args.length; i++)
+												changeStr += args[i] + " ";
+											// Check that the role exists
+											if (spec == null) {
 												sender.sendMessage(
-														"Changed prefix for " + spec.getName() + " to: " + changeStr);
-												GenericPlugin.saveData(GenericPlugin.getPlugin());
-												return true;
-											} else if (args[3].equalsIgnoreCase("postfix")) {
-												spec.setPostfix(" " + changeStr.trim());
-												sender.sendMessage(
-														"Changed postfix for " + spec.getName() + " to: " + changeStr);
-												GenericPlugin.saveData(GenericPlugin.getPlugin());
+														"The role you specified was not recognized for this faction: "
+																+ args[2]);
 												return true;
 											} else {
-												boolean change;
-												if (changeStr.trim().equalsIgnoreCase("true")
-														|| changeStr.trim().equalsIgnoreCase("yes"))
-													change = true;
-												else if (changeStr.trim().equalsIgnoreCase("false")
-														|| changeStr.trim().equalsIgnoreCase("no"))
-													change = false;
-												else {
-													sender.sendMessage("Boolean argument not recognized: " + changeStr);
+												if (args[3].equalsIgnoreCase("prefix")) {
+													spec.setPrefix(changeStr);
+													sender.sendMessage("Changed prefix for " + spec.getName() + " to: "
+															+ changeStr);
+													GenericPlugin.saveData(GenericPlugin.getPlugin());
 													return true;
-												}
-
-												for (RolePerms perm : RolePerms.values()) {
-													if (perm.toString().equalsIgnoreCase(args[3])) {
-														if (change == true)
-															spec.givePerm(perm);
-														else // change == false
-															spec.removePerm(perm);
-														sender.sendMessage("Changed permission " + perm.toString()
-																+ " to " + change);
-														GenericPlugin.saveData(GenericPlugin.getPlugin());
+												} else if (args[3].equalsIgnoreCase("postfix")) {
+													spec.setPostfix(" " + changeStr.trim());
+													sender.sendMessage("Changed postfix for " + spec.getName() + " to: "
+															+ changeStr);
+													GenericPlugin.saveData(GenericPlugin.getPlugin());
+													return true;
+												} else {
+													boolean change;
+													if (changeStr.trim().equalsIgnoreCase("true")
+															|| changeStr.trim().equalsIgnoreCase("yes"))
+														change = true;
+													else if (changeStr.trim().equalsIgnoreCase("false")
+															|| changeStr.trim().equalsIgnoreCase("no"))
+														change = false;
+													else {
+														sender.sendMessage(
+																"Boolean argument not recognized: " + changeStr);
 														return true;
 													}
+
+													for (RolePerms perm : RolePerms.values()) {
+														if (perm.toString().equalsIgnoreCase(args[3])) {
+															if (change == true)
+																spec.givePerm(perm);
+															else // change == false
+																spec.removePerm(perm);
+															sender.sendMessage("Changed permission " + perm.toString()
+																	+ " to " + change);
+															GenericPlugin.saveData(GenericPlugin.getPlugin());
+															return true;
+														}
+													}
+													// Getting here means that the perm hasn't been found
+													sender.sendMessage(
+															"Permission not recognized: " + args[3].toUpperCase());
 												}
-												// Getting here means that the perm hasn't been found
-												sender.sendMessage(
-														"Permission not recognized: " + args[3].toUpperCase());
 											}
+										} else {
+											sender.sendMessage(
+													"You do not have permission in your faction to change role settings.");
 										}
 									} else {
 										sender.sendMessage(

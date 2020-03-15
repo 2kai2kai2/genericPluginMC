@@ -86,6 +86,14 @@ public class Faction implements ConfigurationSerializable {
 		return null;
 	}
 
+	public FactionMember getMember(String name) {
+		for (FactionMember m : getMembers()) {
+			if (m.getOfflinePlayer().getName().equalsIgnoreCase(name))
+				return m;
+		}
+		return null;
+	}
+
 	public void addPlayer(OfflinePlayer p) {
 		if (getMember(p.getUniqueId()) == null) {
 			FactionMember member = new FactionMember(this, p.getUniqueId());
@@ -176,7 +184,8 @@ public class Faction implements ConfigurationSerializable {
 
 	public boolean canPlayerModify(Player p) {
 		Faction f = GenericPlugin.getPlayerFaction(p);
-		return f == this || (this.getWarEnemies().contains(f) && this.hasMemberOnline());
+		return f == this || (this.getWarEnemies().contains(f) && this.hasMemberOnline())
+				|| GenericPlugin.claimOverrides.contains(p);
 	}
 
 	public ArrayList<Faction> getAllies() {

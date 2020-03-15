@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 
 import factionsManager.dataTypes.Claim;
@@ -19,6 +20,12 @@ public class Events implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		GenericPlugin.updateDisplayNames();
 		event.setJoinMessage(event.getPlayer().getDisplayName() + " joined the game.");
+	}
+
+	@EventHandler
+	public void onPlayerLeave(PlayerQuitEvent event) {
+		if (GenericPlugin.claimOverrides.contains(event.getPlayer()))
+			GenericPlugin.claimOverrides.remove(event.getPlayer());
 	}
 
 	@EventHandler
@@ -97,7 +104,8 @@ public class Events implements Listener {
 		Claim claim = GenericPlugin.chunkOwner(event.getBlock().getChunk());
 		if (claim == null) {
 			// Wilderness
-		} else if (claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null) {
+		} else if (claim.getOwner().getMember(event.getPlayer().getUniqueId()) != null
+				|| GenericPlugin.claimOverrides.contains(event.getPlayer())) {
 			// Own faction
 		} else if (claim.getOwner().canPlayerModify(event.getPlayer())) {
 			// At war -- Check if it's something you shouldn't break

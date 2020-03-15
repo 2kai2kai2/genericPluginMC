@@ -274,6 +274,7 @@ public class DiploCommands implements CommandExecutor {
 						sender.sendMessage("/diplo relations");
 						sender.sendMessage("/diplo mailbox");
 						sender.sendMessage("/diplo help");
+						return true;
 					} else if (args[0].equals("accept")) {
 						// If the player can do diplo
 						if (member.hasPerm(RolePerms.DIPLO)) {

@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+import genericPluginMC.GenericPlugin;
 
 public class FactionMember implements ConfigurationSerializable {
 
@@ -53,6 +56,14 @@ public class FactionMember implements ConfigurationSerializable {
 
 	public UUID getPlayer() {
 		return player;
+	}
+
+	public OfflinePlayer getOfflinePlayer() {
+		for (OfflinePlayer p : GenericPlugin.getPlugin().getServer().getOfflinePlayers()) {
+			if (p.getUniqueId().equals(getPlayer()))
+				return p;
+		}
+		return null;
 	}
 
 	public Faction getFaction() {
