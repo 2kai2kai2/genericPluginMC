@@ -46,6 +46,9 @@ public class FAdminTabCompleter implements TabCompleter {
 					if (player.hasPermission("genericmc.admin.claimoverride")) {
 						tabs.add("claimoverride");
 					}
+					if (player.hasPermission("genericmc.admin.spectp")) {
+						tabs.add("spectp");
+					}
 					tabs.add("help");
 					return keepStarts(tabs, args[args.length - 1]); // Doesn't have any arguments
 				} else {
@@ -82,6 +85,29 @@ public class FAdminTabCompleter implements TabCompleter {
 						}
 					} else if (args[0].equals("claimoverride")) {
 						return null;
+					} else if (args[0].equals("spectp")) {
+						if (player.hasPermission("genericmc.admin.spectp")) {
+							if (args.length == 2) {
+								ArrayList<String> tabs = new ArrayList<String>();
+								for (Faction f : GenericPlugin.factions) {
+									for (Claim c : f.getClaims()) {
+										tabs.add(c.getName());
+									}
+								}
+								return keepStarts(tabs, args[args.length - 1]);
+							} else if (args.length == 3) {
+								ArrayList<String> tabs = new ArrayList<String>();
+								for (Faction f : GenericPlugin.factions) {
+									if (f.getClaim(args[1]) != null)
+										tabs.add(f.getName());
+								}
+								return keepStarts(tabs, args[args.length - 1]);
+							} else {
+								return null;
+							}
+						} else {
+							return null;
+						}
 					} else if (args[0].equals("help")) {
 						return null;
 					} else {

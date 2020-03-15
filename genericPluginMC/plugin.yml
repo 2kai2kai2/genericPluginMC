@@ -30,9 +30,13 @@ permissions:
   genericmc.admin.claimoverride:
     description: Gives access to /fadmin claimoverride
     default: op
+  genericmc.admin.spectp:
+    description: Gives access to /fadmin spectp
+    default: op
   genericmc.admin.*:
     description: Gives access to all fadmin commands
     default: op
     children:
       genericmc.admin.setdev: true
       genericmc.admin.claimoverride: true
+      genericmc.admin.spectp: true

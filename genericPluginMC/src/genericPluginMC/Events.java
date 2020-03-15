@@ -1,6 +1,7 @@
 package genericPluginMC;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +27,11 @@ public class Events implements Listener {
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		if (GenericPlugin.claimOverrides.contains(event.getPlayer()))
 			GenericPlugin.claimOverrides.remove(event.getPlayer());
+		if (GenericPlugin.adminSpecLocs.containsKey(event.getPlayer())) {
+			event.getPlayer().teleport(GenericPlugin.adminSpecLocs.get(event.getPlayer()));
+			event.getPlayer().setGameMode(GameMode.SPECTATOR);
+			GenericPlugin.adminSpecLocs.remove(event.getPlayer());
+		}
 	}
 
 	@EventHandler

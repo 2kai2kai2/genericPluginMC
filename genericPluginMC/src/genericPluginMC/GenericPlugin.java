@@ -3,10 +3,14 @@ package genericPluginMC;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Chunk;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -44,6 +48,8 @@ public class GenericPlugin extends JavaPlugin {
 	public static ArrayList<Devrequest> devrequests;
 	public static ArrayList<Player> claimOverrides;
 
+	public static HashMap<Player, Location> adminSpecLocs;
+
 	@Override
 	public void onEnable() {
 		// Serialization
@@ -52,27 +58,29 @@ public class GenericPlugin extends JavaPlugin {
 		ConfigurationSerialization.registerClass(FactionMember.class);
 		ConfigurationSerialization.registerClass(Claim.class);
 		ConfigurationSerialization.registerClass(War.class);
-		
+
 		// Initialize arrays
 		factions = new ArrayList<Faction>();
 		wars = new ArrayList<War>();
 		mail = new ArrayList<DiploMail>();
 		devrequests = new ArrayList<Devrequest>();
 		claimOverrides = new ArrayList<Player>();
-	
+
+		adminSpecLocs = new HashMap<Player, Location>();
+
 		// Configs
 		config = this.getConfig();
 		config.addDefault("allow-wars", true);
 		config.options().copyDefaults(true);
 		this.saveDefaultConfig();
-	
+
 		this.saveResource("data.yml", false);
 		data = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "data.yml"));
 		loadData(getPlugin());
-	
+
 		// Events
 		getServer().getPluginManager().registerEvents(new Events(), this);
-		
+
 		// Commands
 		this.getCommand("faction").setExecutor(new FactionCommands());
 		this.getCommand("faction").setTabCompleter(new FactionTabCompleter());
@@ -87,6 +95,10 @@ public class GenericPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		saveData(getPlugin());
+		for (Entry<Player, Location> set : adminSpecLocs.entrySet()) {
+			set.getKey().teleport(set.getValue());
+			set.getKey().setGameMode(GameMode.SURVIVAL);
+		}
 	}
 
 	public static JavaPlugin getPlugin() {
