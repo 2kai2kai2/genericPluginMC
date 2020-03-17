@@ -50,8 +50,14 @@ public class DiploCommands implements CommandExecutor {
 									factionName += args[i];
 								}
 								Faction dipFaction = GenericPlugin.factionFromName(factionName);
+
 								// Check that the faction is valid
 								if (dipFaction != null) {
+									if (dipFaction.getName().equalsIgnoreCase("admin")) {
+										sender.sendMessage("Resistance is futile.");
+										return true;
+									}
+
 									// Check that they aren't already at war with each other
 									if (faction.getWarEnemies().contains(dipFaction)) {
 										sender.sendMessage("You cannot declare war because you are already at war with "
@@ -150,6 +156,10 @@ public class DiploCommands implements CommandExecutor {
 								Faction dipFaction = GenericPlugin.factionFromName(factionName);
 
 								if (dipFaction != null) {
+									if (dipFaction.getName().equalsIgnoreCase("admin")) {
+										sender.sendMessage("Compromise is impossible.");
+										return true;
+									}
 
 									if (faction.getAllies().contains(dipFaction)) {
 										sender.sendMessage("You cannot send an alliance request to "
@@ -249,12 +259,14 @@ public class DiploCommands implements CommandExecutor {
 												+ "   To: " + ChatColor.ITALIC + mail.getRecipient().getName());
 							sender.sendMessage(mail.getDescription());
 							if (mail instanceof DiploNotificationMail) {
-								player.performCommand("tellraw @p [\"\",{\"text\":\"" + ChatColor.BOLD.toString()
+								player.getServer().dispatchCommand(player.getServer().getConsoleSender(), "tellraw "
+										+ player.getName() + " [\"\",{\"text\":\"" + ChatColor.BOLD.toString()
 										+ ChatColor.YELLOW.toString()
 										+ "[DELETE]\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/diplo accept "
 										+ GenericPlugin.recievedMail(faction).indexOf(mail) + "\"}}]");
 							} else {
-								player.performCommand("tellraw @p [\"\",{\"text\":\"" + ChatColor.BOLD.toString()
+								player.getServer().dispatchCommand(player.getServer().getConsoleSender(), "tellraw "
+										+ player.getName() + " [\"\",{\"text\":\"" + ChatColor.BOLD.toString()
 										+ ChatColor.GREEN.toString()
 										+ "[ACCEPT]\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/diplo accept "
 										+ GenericPlugin.recievedMail(faction).indexOf(mail) + "\"}},{\"text\":\""

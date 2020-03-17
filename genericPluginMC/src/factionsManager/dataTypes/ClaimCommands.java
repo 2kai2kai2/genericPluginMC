@@ -101,29 +101,34 @@ public class ClaimCommands implements CommandExecutor {
 						}
 					} else if (args[0].equals("chunk")) {
 						if (member.hasPerm(RolePerms.CLAIM)) { // Check that this player has perms
-							Claim claim = faction.getClaim(args[1]);
-							if (claim != null) { // Check the claim exists
-								if (claim.maxChunks() > claim.numChunks()) {
-									// Check the faction can still add land to this claim
-									Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-									if (claim.addChunk(chunk)) {
-										// Check that the chunk we're in isn't taken, otherwise add it
-										sender.sendMessage("Added chunk (" + chunk.getX() + ", " + chunk.getZ()
-												+ ") to claim: " + claim.getName());
-										GenericPlugin.saveData(GenericPlugin.getPlugin());
-										return true;
+							if (args.length == 2) {
+								Claim claim = faction.getClaim(args[1]);
+								if (claim != null) { // Check the claim exists
+									if (claim.maxChunks() > claim.numChunks()) {
+										// Check the faction can still add land to this claim
+										Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
+										if (claim.addChunk(chunk)) {
+											// Check that the chunk we're in isn't taken, otherwise add it
+											sender.sendMessage("Added chunk (" + chunk.getX() + ", " + chunk.getZ()
+													+ ") to claim: " + claim.getName());
+											GenericPlugin.saveData(GenericPlugin.getPlugin());
+											return true;
+										} else {
+											sender.sendMessage(
+													"Could not claim the current chunk. Please create the claim elsewhere.");
+											return true;
+										}
 									} else {
 										sender.sendMessage(
-												"Could not claim the current chunk. Please create the claim elsewhere.");
+												"This claim is at its size limit. Use other claims or develop this one for more land.");
 										return true;
 									}
 								} else {
-									sender.sendMessage(
-											"This claim is at its size limit. Use other claims or develop this one for more land.");
+									sender.sendMessage("The specified claim name was not recognized: " + args[1]);
 									return true;
 								}
 							} else {
-								sender.sendMessage("The specified claim name was not recognized: " + args[1]);
+								sender.sendMessage("Invalid number of arguments.");
 								return true;
 							}
 						} else {
@@ -132,28 +137,33 @@ public class ClaimCommands implements CommandExecutor {
 						}
 					} else if (args[0].equals("unchunk")) {
 						if (member.hasPerm(RolePerms.CLAIM)) { // Check that this player has perms
-							Claim claim = faction.getClaim(args[1]);
-							if (claim != null) { // Check the claim exists
-								if (claim.numChunks() > 1) {
-									// Check that this would not result in 0 chunks in this claim
-									Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-									if (claim.removeChunk(chunk)) {
-										// Remove the chunk if it's in the claim, or if it's not then do nothing.
-										sender.sendMessage("Removed chunk (" + chunk.getX() + ", " + chunk.getZ()
-												+ ") from claim: " + claim.getName());
-										GenericPlugin.saveData(GenericPlugin.getPlugin());
-										return true;
+							if (args.length == 2) {
+								Claim claim = faction.getClaim(args[1]);
+								if (claim != null) { // Check the claim exists
+									if (claim.numChunks() > 1) {
+										// Check that this would not result in 0 chunks in this claim
+										Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
+										if (claim.removeChunk(chunk)) {
+											// Remove the chunk if it's in the claim, or if it's not then do nothing.
+											sender.sendMessage("Removed chunk (" + chunk.getX() + ", " + chunk.getZ()
+													+ ") from claim: " + claim.getName());
+											GenericPlugin.saveData(GenericPlugin.getPlugin());
+											return true;
+										} else {
+											sender.sendMessage("This chunk is already not in the claim.");
+											return true;
+										}
 									} else {
-										sender.sendMessage("This chunk is already not in the claim.");
+										sender.sendMessage(
+												"You cannot remove the last chunk in this claim. Instead, you can delete the claim entirely.");
 										return true;
 									}
 								} else {
-									sender.sendMessage(
-											"You cannot remove the last chunk in this claim. Instead, you can delete the claim entirely.");
+									sender.sendMessage("The specified claim name was not recognized: " + args[1]);
 									return true;
 								}
 							} else {
-								sender.sendMessage("The specified claim name was not recognized: " + args[1]);
+								sender.sendMessage("Invalid number of arguments.");
 								return true;
 							}
 						} else {
@@ -214,7 +224,8 @@ public class ClaimCommands implements CommandExecutor {
 						for (Claim claim : faction.getClaims()) {
 							sender.sendMessage(ChatColor.UNDERLINE.toString() + claim.getName());
 							sender.sendMessage("Chunks: " + claim.numChunks());
-							player.performCommand("tellraw @p [\"\",{\"text\":\"Development: " + claim.getDevLevel()
+							player.getServer().dispatchCommand(player.getServer().getConsoleSender(), "tellraw "
+									+ player.getName() + " [\"\",{\"text\":\"Development: " + claim.getDevLevel()
 									+ " \"},{\"text\":\"" + ChatColor.YELLOW.toString()
 									+ "[REQUEST DEV]\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/claim devrequest "
 									+ claim.getName() + "\"}}]");

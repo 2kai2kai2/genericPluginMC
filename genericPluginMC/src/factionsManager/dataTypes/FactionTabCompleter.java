@@ -3,6 +3,7 @@ package factionsManager.dataTypes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -42,7 +43,11 @@ public class FactionTabCompleter implements TabCompleter {
 				} else {
 					tabs.add("leave");
 					tabs.add("role");
+					if (GenericPlugin.getPlayerFaction(player).getMember(player.getUniqueId()).isLeader()) {
+						tabs.add("color");
+					}
 				}
+				tabs.add("map");
 				tabs.add("list");
 				// tabs.add("help");
 				return keepStarts(tabs, args[args.length - 1]); // Doesn't have any arguments
@@ -224,6 +229,23 @@ public class FactionTabCompleter implements TabCompleter {
 							} else {
 								return null;
 							}
+						}
+					} else {
+						return null;
+					}
+				} else if (args[0].equals("map")) {
+					return null;
+				} else if (args[0].equals("color")) {
+					if (args.length == 2) {
+						if (GenericPlugin.getPlayerFaction(player).getMember(player.getUniqueId()).isLeader()) {
+							ArrayList<String> tabs = new ArrayList<String>();
+							for (ChatColor color : ChatColor.values()) {
+								if (color.isColor())
+									tabs.add(color.name().toLowerCase());
+							}
+							return keepStarts(tabs, args[args.length - 1]);
+						} else {
+							return null;
 						}
 					} else {
 						return null;

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -71,6 +72,7 @@ public class GenericPlugin extends JavaPlugin {
 		// Configs
 		config = this.getConfig();
 		config.addDefault("allow-wars", true);
+		config.addDefault("allow-faction-map", true);
 		config.options().copyDefaults(true);
 		this.saveDefaultConfig();
 
@@ -90,6 +92,10 @@ public class GenericPlugin extends JavaPlugin {
 		this.getCommand("diplo").setTabCompleter(new DiploTabCompleter());
 		this.getCommand("fadmin").setExecutor(new FAdminCommands());
 		this.getCommand("fadmin").setTabCompleter(new FAdminTabCompleter());
+
+		// Setup admin faction if doesn't exist
+		if (GenericPlugin.factionFromName("admin") == null)
+			factions.add(Faction.generateAdminFaction());
 	}
 
 	@Override
@@ -139,6 +145,18 @@ public class GenericPlugin extends JavaPlugin {
 		return null;
 	}
 
+	public static Claim locationOwner(Location loc) {
+		for (Faction f : factions) {
+			for (Claim cl : f.getClaims()) {
+				for (Chunk ch : cl.getChunks()) {
+					if (Math.floor(loc.getX() / 16) == ch.getX() && Math.floor(loc.getZ() / 16) == ch.getZ())
+						return cl;
+				}
+			}
+		}
+		return null;
+	}
+
 	public static ArrayList<DiploMail> recievedMail(Faction f) {
 		ArrayList<DiploMail> recMail = new ArrayList<DiploMail>();
 		for (DiploMail m : mail) {
@@ -153,14 +171,17 @@ public class GenericPlugin extends JavaPlugin {
 			Faction faction = getPlayerFaction(player);
 			String displayName;
 			if (faction == null) {
-				displayName = player.getName() + " the Homeless";
+				displayName = ChatColor.GRAY.toString() + player.getName() + " the Homeless"
+						+ ChatColor.RESET.toString();
 			} else {
 				FactionMember member = faction.getMember(player.getUniqueId());
 				FactionRole topRole = member.topRole();
 				if (topRole == null) // Member has no roles
-					displayName = player.getName() + " of " + faction.getName();
+					displayName = faction.getColor().toString() + player.getName() + " of " + faction.getName()
+							+ ChatColor.RESET.toString();
 				else
-					displayName = topRole.getPrefix() + player.getName() + topRole.getPostfix();
+					displayName = faction.getColor().toString() + topRole.getPrefix() + player.getName()
+							+ topRole.getPostfix() + ChatColor.RESET.toString();
 			}
 			player.setDisplayName(displayName);
 			player.setPlayerListName(displayName);

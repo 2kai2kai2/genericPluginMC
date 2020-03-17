@@ -1,6 +1,7 @@
 package genericPluginMC;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -8,13 +9,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.map.MapView;
+import org.bukkit.map.MapView.Scale;
 
 import factionsManager.dataTypes.Claim;
+import factionsManager.factionMap.FactionMapRenderer;
 
 public class Events implements Listener {
 	@EventHandler
@@ -34,6 +42,44 @@ public class Events implements Listener {
 		}
 	}
 
+	public static boolean isFactionMap(ItemStack stack) {
+		return stack != null && stack.getType().equals(Material.FILLED_MAP) && stack.getItemMeta().hasDisplayName()
+				&& stack.getItemMeta().getDisplayName().equals("Factions Map");
+	}
+
+	@EventHandler
+	public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+		ItemStack stack = event.getPlayer().getInventory().getItem(event.getNewSlot());
+		if (isFactionMap(stack) && GenericPlugin.config.getBoolean("allow-faction-map")) {
+			MapMeta meta = (MapMeta) stack.getItemMeta();
+			meta.setColor(Color.PURPLE);
+			meta.getMapView().getRenderers().clear();
+			meta.getMapView().addRenderer(new FactionMapRenderer());
+		}
+	}
+
+	@EventHandler
+	public void onPlayerItemDrop(PlayerDropItemEvent event) {
+		ItemStack stack = event.getItemDrop().getItemStack();
+		// Faction map scaling
+		if (isFactionMap(stack)) {
+			if (event.getPlayer().isSneaking() && GenericPlugin.config.getBoolean("allow-faction-map")) {
+				MapView view = ((MapMeta) stack.getItemMeta()).getMapView();
+				if (view.getScale().equals(Scale.CLOSEST))
+					view.setScale(Scale.CLOSE);
+				else if (view.getScale().equals(Scale.CLOSE))
+					view.setScale(Scale.NORMAL);
+				else if (view.getScale().equals(Scale.NORMAL))
+					view.setScale(Scale.FAR);
+				else if (view.getScale().equals(Scale.FAR))
+					view.setScale(Scale.FARTHEST);
+				else if (view.getScale().equals(Scale.FARTHEST))
+					view.setScale(Scale.CLOSEST);
+				event.setCancelled(true);
+			}
+		}
+	}
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		// If they just moved to a new chunk
@@ -44,7 +90,8 @@ public class Events implements Listener {
 				if (toClaim == null)
 					event.getPlayer().sendTitle("", ChatColor.DARK_GREEN.toString() + "Entered wilderness", 8, 60, 12);
 				else
-					event.getPlayer().sendTitle("", "Entered " + toClaim.getName(), 8, 60, 12);
+					event.getPlayer().sendTitle("",
+							toClaim.getOwner().getColor().toString() + "Entered " + toClaim.getName(), 8, 60, 12);
 			}
 		}
 	}

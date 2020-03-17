@@ -1,16 +1,20 @@
 package factionsManager.dataTypes;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
 
 import diplomacy.DiploMail;
 import diplomacy.JoinRequestMail;
 import diplomacy.War;
+import genericPluginMC.Events;
 import genericPluginMC.GenericPlugin;
 
 public class FactionCommands implements CommandExecutor {
@@ -50,7 +54,8 @@ public class FactionCommands implements CommandExecutor {
 
 							// Check that this name is not already taken
 							for (Faction f : GenericPlugin.factions) {
-								if (f.getName().equalsIgnoreCase(factionName)) {
+								if (f.getName().equalsIgnoreCase(factionName)
+										|| f.getName().equalsIgnoreCase("admin")) {
 									sender.sendMessage("The name \"" + factionName
 											+ "\" is already taken. Please choose another.");
 									return true;
@@ -88,6 +93,10 @@ public class FactionCommands implements CommandExecutor {
 								if (i != 1)
 									factionName += " ";
 								factionName += args[i];
+							}
+
+							if (factionName.equalsIgnoreCase("admin")) {
+								sender.sendMessage("The admin faction cannot be joined.");
 							}
 
 							for (Faction f : GenericPlugin.factions) {
@@ -153,8 +162,10 @@ public class FactionCommands implements CommandExecutor {
 							sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
 									+ "======FACTIONS======");
 							for (Faction faction : GenericPlugin.factions) {
-								sender.sendMessage(ChatColor.UNDERLINE.toString() + faction.getName() + ": Members: "
-										+ faction.getMembers().size() + " Claims: " + faction.getClaims().size());
+								if (!faction.getName().equalsIgnoreCase("admin"))
+									sender.sendMessage(ChatColor.UNDERLINE.toString() + faction.getName()
+											+ ": Members: " + faction.getMembers().size() + " Claims: "
+											+ faction.getClaims().size());
 							}
 							return true;
 						} else { // List members of a faction
@@ -167,7 +178,7 @@ public class FactionCommands implements CommandExecutor {
 							}
 
 							Faction faction = GenericPlugin.factionFromName(factionName);
-							if (faction == null) {
+							if (faction == null || faction.getName().equalsIgnoreCase("admin")) {
 								sender.sendMessage("The faction you entered was not recognized: " + factionName);
 								return true;
 							} else {
@@ -186,6 +197,35 @@ public class FactionCommands implements CommandExecutor {
 								}
 								return true;
 							}
+						}
+					} else if (args[0].equals("color")) {
+						Faction faction = GenericPlugin.getPlayerFaction(player);
+						if (faction != null) {
+							if (faction.getMember(player.getUniqueId()).isLeader()) {
+								if (args.length == 2) {
+									ChatColor color;
+									try {
+										color = ChatColor.valueOf(args[1].toUpperCase());
+									} catch (IllegalArgumentException e) {
+										sender.sendMessage("Color not recognized: " + args[1]);
+										return true;
+									}
+									GenericPlugin.getPlayerFaction(player).setColor(color);
+									sender.sendMessage("Changed faction color to " + color.name().toLowerCase());
+									GenericPlugin.updateDisplayNames();
+									GenericPlugin.saveData(GenericPlugin.getPlugin());
+									return true;
+								} else {
+									sender.sendMessage("Invalid number of arguments.");
+									return true;
+								}
+							} else {
+								sender.sendMessage("You must be faction leader to use this command.");
+								return true;
+							}
+						} else {
+							sender.sendMessage("You must be in a faction to use this command.");
+							return true;
 						}
 					} else if (args[0].equals("role")) {
 						if (args.length >= 2) {
@@ -514,6 +554,31 @@ public class FactionCommands implements CommandExecutor {
 						} else {
 							// This is where we give role command help
 							sender.sendMessage("Try this for roles help: /faction role help");
+							return true;
+						}
+					} else if (args[0].equals("map")) {
+						if (GenericPlugin.config.getBoolean("allow-faction-map")) {
+							for (ItemStack stack : player.getInventory().getContents()) {
+								if (Events.isFactionMap(stack)) {
+									sender.sendMessage(
+											"You already have a faction map in your inventory. To cycle scales, drop it while sneaking.");
+									return true;
+								}
+							}
+							ItemStack item = new ItemStack(Material.FILLED_MAP);
+							MapMeta meta = (MapMeta) item.getItemMeta();
+							meta.setDisplayName("Factions Map");
+							item.setItemMeta(meta);
+							if (player.getInventory().addItem(item).size() == 0) {
+								sender.sendMessage(
+										"Gave Factions Map. You can cycle scales by dropping it while sneaking.");
+								return true;
+							} else {
+								sender.sendMessage("You already have a Factions Map. Please use that one.");
+								return true;
+							}
+						} else {
+							sender.sendMessage("Faction map is disabled on this server.");
 							return true;
 						}
 					}

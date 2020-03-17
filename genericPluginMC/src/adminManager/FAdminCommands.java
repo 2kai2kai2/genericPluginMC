@@ -41,7 +41,7 @@ public class FAdminCommands implements CommandExecutor {
 										ChatColor.UNDERLINE.toString() + request.getClaim().getOwner().getName() + ": "
 												+ request.getClaim().getName());
 								// Tellraw for dev changes
-								String commandStr = "tellraw @p [\"\",{\"text\":\"Set Dev: \"}";
+								String commandStr = "tellraw " + player.getName() + " [\"\",{\"text\":\"Set Dev: \"}";
 								for (int i = 0; i <= 16; i++) {
 									String textStr;
 									if (request.getClaim().getDevLevel() == i)
@@ -54,10 +54,11 @@ public class FAdminCommands implements CommandExecutor {
 											+ request.getClaim().getOwner().getName() + "\"}}";
 								}
 								commandStr += "]";
-								player.performCommand(commandStr);
+								player.getServer().dispatchCommand(player.getServer().getConsoleSender(), commandStr);
 
 								// Tellraw to view claim
-								player.performCommand("tellraw @p [\"\",{\"text\":\"" + ChatColor.BOLD.toString()
+								player.getServer().dispatchCommand(player.getServer().getConsoleSender(), "tellraw "
+										+ player.getName() + " [\"\",{\"text\":\"" + ChatColor.BOLD.toString()
 										+ ChatColor.WHITE.toString()
 										+ "[TELEPORT]\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/fadmin spectp "
 										+ request.getClaim().getName() + " " + request.getClaim().getOwner().getName()
@@ -254,6 +255,93 @@ public class FAdminCommands implements CommandExecutor {
 							}
 						} else {
 							sender.sendMessage(command.getPermissionMessage());
+							return true;
+						}
+					} else if (args[0].equals("claim")) {
+						if (args.length > 1) {
+							Faction admfac = GenericPlugin.factionFromName("admin");
+							if (args[1].equals("new")) {
+								if (args.length == 3) {
+									if (admfac.getClaim(args[2]) == null) {
+										admfac.getClaims().add(new Claim(admfac, args[2]));
+										admfac.getClaim(args[2]).addChunk(player.getLocation().getChunk());
+										sender.sendMessage("Created new admin claim: " + args[2]);
+										return true;
+									} else {
+										sender.sendMessage(
+												"Claim name is already taken for the admin faction: " + args[2]);
+										return true;
+									}
+								} else {
+									sender.sendMessage("Invalid number of arguments.");
+									return true;
+								}
+							} else if (args[1].equals("delete")) {
+								if (args.length == 3) {
+									if (admfac.getClaim(args[2]) != null) {
+										admfac.getClaims().remove(admfac.getClaim(args[2]));
+										sender.sendMessage("Deleted admin claim: " + args[2]);
+										return true;
+									} else {
+										sender.sendMessage("Claim name not recognized: " + args[2]);
+										return true;
+									}
+								} else {
+									sender.sendMessage("Invalid number of arguments.");
+									return true;
+								}
+							} else if (args[1].equals("chunk")) {
+								if (args.length == 3) {
+									Claim c = admfac.getClaim(args[2]);
+									if (c != null) {
+										if (c.addChunk(player.getLocation().getChunk())) {
+											sender.sendMessage("Claimed chunk for admin claim: " + c.getName());
+											return true;
+										} else {
+											sender.sendMessage("This chunk is already claimed.");
+											return true;
+										}
+									} else {
+										sender.sendMessage("Claim name not recognized: " + args[2]);
+										return true;
+									}
+								} else {
+									sender.sendMessage("Invalid number of arguments.");
+									return true;
+								}
+							} else if (args[1].equals("unchunk")) {
+								if (args.length == 3) {
+									Claim c = admfac.getClaim(args[2]);
+									if (c != null) {
+										if (c.removeChunk(player.getLocation().getChunk())) {
+											sender.sendMessage("Unclaimed chunk for admin claim: " + c.getName());
+											return true;
+										} else {
+											sender.sendMessage("This chunk isn't claimed.");
+											return true;
+										}
+									} else {
+										sender.sendMessage("Claim name not recognized: " + args[2]);
+										return true;
+									}
+								} else {
+									sender.sendMessage("Invalid number of arguments.");
+									return true;
+								}
+							} else if (args[1].equals("list")) {
+								sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
+										+ "======ADMIN CLAIMS======");
+								for (Claim c : admfac.getClaims()) {
+									sender.sendMessage(ChatColor.UNDERLINE.toString() + c.getName() + ": "
+											+ ChatColor.RESET.toString() + " Chunks: " + c.numChunks());
+								}
+								return true;
+							} else {
+								sender.sendMessage("You must specify an fadmin claim subcommand to perform.");
+								return false;
+							}
+						} else {
+							sender.sendMessage("Please specify an action to take for admin claims.");
 							return true;
 						}
 					} else {

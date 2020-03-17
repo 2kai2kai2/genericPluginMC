@@ -49,6 +49,9 @@ public class FAdminTabCompleter implements TabCompleter {
 					if (player.hasPermission("genericmc.admin.spectp")) {
 						tabs.add("spectp");
 					}
+					if (player.hasPermission("genericmc.admin.claim")) {
+						tabs.add("claim");
+					}
 					tabs.add("help");
 					return keepStarts(tabs, args[args.length - 1]); // Doesn't have any arguments
 				} else {
@@ -104,6 +107,48 @@ public class FAdminTabCompleter implements TabCompleter {
 								return keepStarts(tabs, args[args.length - 1]);
 							} else {
 								return null;
+							}
+						} else {
+							return null;
+						}
+					} else if (args[0].equals("claim")) {
+						if (player.hasPermission("genericmc.admin.claim")) {
+							if (args.length == 2) {
+								ArrayList<String> tabs = new ArrayList<String>();
+								tabs.add("new");
+								tabs.add("delete");
+								tabs.add("chunk");
+								tabs.add("unchunk");
+								tabs.add("list");
+								return keepStarts(tabs, args[args.length - 1]);
+							} else {
+								Faction admfac = GenericPlugin.factionFromName("admin");
+								if (args[1].equals("new")) {
+									return null;
+								} else if (args[1].equals("delete")) {
+									ArrayList<String> tabs = new ArrayList<String>();
+									for (Claim c : admfac.getClaims())
+										tabs.add(c.getName());
+									return keepStarts(tabs, args[args.length - 1]);
+								} else if (args[1].equals("chunk")) {
+									ArrayList<String> tabs = new ArrayList<String>();
+									for (Claim c : admfac.getClaims()) {
+										if (c.hasNeighboringChunk(player.getLocation().getChunk()))
+											tabs.add(c.getName());
+									}
+									return keepStarts(tabs, args[args.length - 1]);
+								} else if (args[1].equals("unchunk")) {
+									ArrayList<String> tabs = new ArrayList<String>();
+									for (Claim c : admfac.getClaims()) {
+										if (c.hasChunk(player.getLocation().getChunk()))
+											tabs.add(c.getName());
+									}
+									return keepStarts(tabs, args[args.length - 1]);
+								} else if (args[1].equals("list")) {
+									return null;
+								} else {
+									return null;
+								}
 							}
 						} else {
 							return null;

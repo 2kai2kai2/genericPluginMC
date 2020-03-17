@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ public class Faction implements ConfigurationSerializable {
 	private ArrayList<FactionRole> roles;
 	private ArrayList<Claim> claims;
 	private ArrayList<Faction> allies;
+	private ChatColor color;
 
 	public Faction(UUID leader, String name) {
 		this.setName(name);
@@ -34,6 +36,26 @@ public class Faction implements ConfigurationSerializable {
 		leaderMember.getRoles().add(roles.get(0));
 		members.add(leaderMember);
 		this.claims = new ArrayList<Claim>();
+		this.setColor(ChatColor.WHITE);
+	}
+
+	/**
+	 * The admin Faction constructor-- should not be used for other purposes.
+	 */
+	private Faction() {
+		this.setName("admin");
+		this.members = new ArrayList<FactionMember>();
+		this.roles = new ArrayList<FactionRole>();
+		this.allies = new ArrayList<Faction>();
+		this.claims = new ArrayList<Claim>();
+		this.setColor(ChatColor.DARK_PURPLE);
+	}
+
+	public static Faction generateAdminFaction() {
+		if (GenericPlugin.factionFromName("admin") != null)
+			return GenericPlugin.factionFromName("admin");
+		else
+			return new Faction();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,6 +84,14 @@ public class Faction implements ConfigurationSerializable {
 			}
 			// else-- That faction hasn't been already loaded so the alliances will be added
 			// once it has so that both will be loaded when the alliances are added.
+		}
+		try {
+			this.setColor(ChatColor.valueOf((String) map.get("color")));
+		} catch (NullPointerException | IllegalArgumentException e) {
+			if (this.getName().equals("admin"))
+				this.setColor(ChatColor.DARK_PURPLE);
+			else
+				this.setColor(ChatColor.WHITE);
 		}
 	}
 
@@ -197,6 +227,14 @@ public class Faction implements ConfigurationSerializable {
 			getAllies().add(ally);
 	}
 
+	public ChatColor getColor() {
+		return color;
+	}
+
+	public void setColor(ChatColor color) {
+		this.color = color;
+	}
+
 	public void sendNotifMail(Faction recipient, String title, String message) {
 		GenericPlugin.mail.add(new DiploNotificationMail(title, this, recipient, message));
 	}
@@ -229,6 +267,8 @@ public class Faction implements ConfigurationSerializable {
 			allyList.add(faction.getName());
 		}
 		map.put("allies", allyList);
+
+		map.put("color", getColor().name());
 
 		return map;
 	}

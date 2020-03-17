@@ -1,13 +1,13 @@
 name: GenericPlugin
 main: genericPluginMC.GenericPlugin
-version: 1.0
+version: 1.1.0
 api-version: 1.15
 author: 2kai2kai2
 prefix: GenericMC
 commands:
   faction:
     description: All player faction control commands.
-    usage: "Usage: /<command> <create|join|leave|role|list|help>"
+    usage: "Usage: /<command> <create|join|leave|role|list|map|color|help>"
     default: true
   claim:
     description: All player claim commands.
@@ -20,7 +20,7 @@ commands:
     alias: diplomacy
   fadmin:
     description: All administrative controls on faction-related things.
-    usage: "Usage: /<command> <devrequests|claimoverride|help>"
+    usage: "Usage: /<command> <devrequests|claimoverride|spectp|claim|help>"
     default: op
     alias: factionadmin
 permissions:
@@ -33,6 +33,9 @@ permissions:
   genericmc.admin.spectp:
     description: Gives access to /fadmin spectp
     default: op
+  genericmc.admin.claim:
+    description: Gives access to fadmin claim commands
+    default: op
   genericmc.admin.*:
     description: Gives access to all fadmin commands
     default: op
@@ -40,3 +43,4 @@ permissions:
       genericmc.admin.setdev: true
       genericmc.admin.claimoverride: true
       genericmc.admin.spectp: true
+      genericmc.admin.claim: true

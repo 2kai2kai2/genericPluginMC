@@ -78,6 +78,14 @@ public class FactionMember implements ConfigurationSerializable {
 		return false;
 	}
 
+	public boolean isLeader() {
+		for (FactionRole role : getRoles()) {
+			if (role.isLeader())
+				return true;
+		}
+		return false;
+	}
+
 	@Override
 	public Map<String, Object> serialize() {
 		HashMap<String, Object> map = new HashMap<String, Object>();
