@@ -12,10 +12,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import adminManager.Devrequest;
@@ -37,6 +39,9 @@ import factionsManager.dataTypes.FactionCommands;
 import factionsManager.dataTypes.FactionMember;
 import factionsManager.dataTypes.FactionRole;
 import factionsManager.dataTypes.FactionTabCompleter;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 public class GenericPlugin extends JavaPlugin {
 
@@ -51,8 +56,27 @@ public class GenericPlugin extends JavaPlugin {
 
 	public static HashMap<Player, Location> adminSpecLocs;
 
+	public static Economy econ = null;
+	public static Permission perms = null;
+	public static Chat chat = null;
+
 	@Override
 	public void onEnable() {
+		// Vault
+		if (getServer().getPluginManager().getPlugin("Vault") != null) {
+			RegisteredServiceProvider<Economy> serviceEcon = getServer().getServicesManager()
+					.getRegistration(Economy.class);
+			if (serviceEcon != null)
+				econ = serviceEcon.getProvider();
+			RegisteredServiceProvider<Permission> servicePerms = getServer().getServicesManager()
+					.getRegistration(Permission.class);
+			if (servicePerms != null)
+				perms = servicePerms.getProvider();
+			RegisteredServiceProvider<Chat> serviceChat = getServer().getServicesManager().getRegistration(Chat.class);
+			if (serviceChat != null)
+				chat = serviceChat.getProvider();
+		}
+
 		// Serialization
 		ConfigurationSerialization.registerClass(Faction.class);
 		ConfigurationSerialization.registerClass(FactionRole.class);
@@ -131,7 +155,7 @@ public class GenericPlugin extends JavaPlugin {
 		return null;
 	}
 
-	public static Faction getPlayerFaction(Player player) {
+	public static Faction getPlayerFaction(OfflinePlayer player) {
 		return getPlayerFaction(player.getUniqueId());
 	}
 
@@ -168,19 +192,39 @@ public class GenericPlugin extends JavaPlugin {
 
 	public static void updateDisplayNames() {
 		for (Player player : getPlugin().getServer().getOnlinePlayers()) {
+			String displayName = "";
+
+			// Vault Permission info
+			if (perms != null && config.getBoolean("chat-include-group") && perms.hasGroupSupport()) {
+				try {
+					String group = perms.getPrimaryGroup("NULL", player);
+					if (group != null) {
+						String groupPrefix;
+						if (chat == null) {
+							groupPrefix = "[" + group + "]";
+						} else {
+							groupPrefix = chat.getGroupPrefix("NULL", group);
+						}
+						displayName = ChatColor.RESET.toString() + groupPrefix + ChatColor.RESET.toString() + " ";
+					}
+				} catch (Exception e) {
+					// perms.getPrimaryGroup() didn't work.
+				}
+			}
+
+			// Faction info
 			Faction faction = getPlayerFaction(player);
-			String displayName;
 			if (faction == null) {
-				displayName = ChatColor.GRAY.toString() + player.getName() + " the Homeless"
+				displayName += ChatColor.GRAY.toString() + player.getName() + " the Homeless"
 						+ ChatColor.RESET.toString();
 			} else {
 				FactionMember member = faction.getMember(player.getUniqueId());
 				FactionRole topRole = member.topRole();
 				if (topRole == null) // Member has no roles
-					displayName = faction.getColor().toString() + player.getName() + " of " + faction.getName()
+					displayName += faction.getColor().toString() + player.getName() + " of " + faction.getName()
 							+ ChatColor.RESET.toString();
 				else
-					displayName = faction.getColor().toString() + topRole.getPrefix() + player.getName()
+					displayName += faction.getColor().toString() + topRole.getPrefix() + player.getName()
 							+ topRole.getPostfix() + ChatColor.RESET.toString();
 			}
 			player.setDisplayName(displayName);

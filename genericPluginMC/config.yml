@@ -1,0 +1,7 @@
+# Currently doesn't actually do anything.
+allow-wars: true
+
+# Set this to false to disable the faction map. It shouldn't cause lag, but just in case.
+allow-faction-map: true
+
+chat-include-group: true

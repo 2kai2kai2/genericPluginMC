@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
-
 import factionsManager.dataTypes.Claim;
 import factionsManager.factionMap.FactionMapRenderer;
 
@@ -41,7 +40,7 @@ public class Events implements Listener {
 			GenericPlugin.adminSpecLocs.remove(event.getPlayer());
 		}
 	}
-
+	
 	public static boolean isFactionMap(ItemStack stack) {
 		return stack != null && stack.getType().equals(Material.FILLED_MAP) && stack.getItemMeta().hasDisplayName()
 				&& stack.getItemMeta().getDisplayName().equals("Factions Map");
