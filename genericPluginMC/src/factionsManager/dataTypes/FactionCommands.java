@@ -55,7 +55,7 @@ public class FactionCommands implements CommandExecutor {
 							// Check that this name is not already taken
 							for (Faction f : GenericPlugin.factions) {
 								if (f.getName().equalsIgnoreCase(factionName)
-										|| f.getName().equalsIgnoreCase("admin")) {
+										|| factionName.equalsIgnoreCase("admin")) {
 									sender.sendMessage("The name \"" + factionName
 											+ "\" is already taken. Please choose another.");
 									return true;

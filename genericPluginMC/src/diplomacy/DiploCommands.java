@@ -73,12 +73,14 @@ public class DiploCommands implements CommandExecutor {
 									} else {
 										GenericPlugin.wars.add(new War(faction, dipFaction,
 												faction.getName() + " war against " + dipFaction.getName()));
-										sender.sendMessage("Declared war on " + dipFaction.getName());
+										// Notifications
 										faction.sendNotifMail(dipFaction,
 												faction.getName() + " declaration of war against "
 														+ dipFaction.getName(),
 												faction.getName() + " has declared war against " + dipFaction.getName()
 														+ "! You ought to prepare to fight and look for allies.");
+										GenericPlugin.getPlugin().getServer().broadcastMessage(faction.getDisplayName()
+												+ " has declared war on " + dipFaction.getDisplayName());
 										// Remove all alliance offers between them so they can't be accepted midwar
 										for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
 											DiploMail m = GenericPlugin.mail.get(i);

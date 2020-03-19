@@ -1,5 +1,7 @@
 package genericPluginMC;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -20,7 +22,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
+
+import diplomacy.DiploMail;
+import diplomacy.DiploNotificationMail;
 import factionsManager.dataTypes.Claim;
+import factionsManager.dataTypes.Faction;
+import factionsManager.dataTypes.FactionMember;
+import factionsManager.dataTypes.RolePerms;
 import factionsManager.factionMap.FactionMapRenderer;
 
 public class Events implements Listener {
@@ -28,6 +36,28 @@ public class Events implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		GenericPlugin.updateDisplayNames();
 		event.setJoinMessage(event.getPlayer().getDisplayName() + " joined the game.");
+
+		Faction f = GenericPlugin.getPlayerFaction(event.getPlayer());
+		if (f != null) {
+			boolean notifMail = false;
+			FactionMember m = f.getMember(event.getPlayer().getUniqueId());
+			ArrayList<DiploMail> facMail = GenericPlugin.recievedMail(f);
+			if (m.hasPerm(RolePerms.DIPLO)) {
+				if (facMail.size() > 0)
+					notifMail = true;
+			} else {
+				for (DiploMail mail : facMail) {
+					if (mail instanceof DiploNotificationMail) {
+						notifMail = true;
+						break;
+					}
+				}
+			}
+
+			if (notifMail) {
+				event.getPlayer().sendMessage("Your faction has " + facMail.size() + " mail items.");
+			}
+		}
 	}
 
 	@EventHandler
@@ -39,8 +69,9 @@ public class Events implements Listener {
 			event.getPlayer().setGameMode(GameMode.SPECTATOR);
 			GenericPlugin.adminSpecLocs.remove(event.getPlayer());
 		}
+		event.setQuitMessage(event.getPlayer().getDisplayName() + " left the game.");
 	}
-	
+
 	public static boolean isFactionMap(ItemStack stack) {
 		return stack != null && stack.getType().equals(Material.FILLED_MAP) && stack.getItemMeta().hasDisplayName()
 				&& stack.getItemMeta().getDisplayName().equals("Factions Map");

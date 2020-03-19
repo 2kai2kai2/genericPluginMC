@@ -99,6 +99,10 @@ public class Faction implements ConfigurationSerializable {
 		return name;
 	}
 
+	public String getDisplayName() {
+		return getColor().toString() + getName() + ChatColor.RESET.toString();
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
