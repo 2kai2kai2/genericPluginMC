@@ -5,3 +5,6 @@ allow-wars: true
 allow-faction-map: true
 
 chat-include-group: true
+
+# The discord token, or "null" if no discord server should be used.
+discord-token: "null"

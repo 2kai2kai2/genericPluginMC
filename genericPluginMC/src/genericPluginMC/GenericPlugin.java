@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -31,6 +32,7 @@ import diplomacy.DiploTabCompleter;
 import diplomacy.JoinRequestMail;
 import diplomacy.PeaceOfferMail;
 import diplomacy.War;
+import discordBot.Bot;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.ClaimCommands;
 import factionsManager.dataTypes.ClaimTabCompleter;
@@ -59,6 +61,7 @@ public class GenericPlugin extends JavaPlugin {
 	public static Economy econ = null;
 	public static Permission perms = null;
 	public static Chat chat = null;
+	public static Logger logger;
 
 	@Override
 	public void onEnable() {
@@ -92,6 +95,8 @@ public class GenericPlugin extends JavaPlugin {
 		claimOverrides = new ArrayList<Player>();
 
 		adminSpecLocs = new HashMap<Player, Location>();
+		
+		logger = this.getLogger();
 
 		// Configs
 		config = this.getConfig();
@@ -120,6 +125,9 @@ public class GenericPlugin extends JavaPlugin {
 		// Setup admin faction if doesn't exist
 		if (GenericPlugin.factionFromName("admin") == null)
 			factions.add(Faction.generateAdminFaction());
+		
+		// Discord
+		Bot.init();
 	}
 
 	@Override
