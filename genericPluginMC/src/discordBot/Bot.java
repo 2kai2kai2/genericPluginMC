@@ -216,9 +216,8 @@ public class Bot {
 					} else { // This means neither is linked
 						GenericPlugin.discPlayers
 								.add(new DiscordPlayer(event.getAuthor().getIdLong(), player.getUniqueId()));
-						channel.sendMessage(
-								"Linked accounts: " + event.getAuthor().getAsMention() + " and " + player.getName())
-								.queue();
+						channel.sendMessage("Linked accounts: " + event.getAuthor().getAsMention() + " and "
+								+ json.get("name").getAsString()).queue();
 						player.setWhitelisted(true);
 						GenericPlugin.saveDiscord();
 						updateFactionRoles();

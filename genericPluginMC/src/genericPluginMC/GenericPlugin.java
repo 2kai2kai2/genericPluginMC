@@ -225,7 +225,7 @@ public class GenericPlugin extends JavaPlugin {
 						} else {
 							groupPrefix = chat.getGroupPrefix("NULL", group);
 							// Accept '&' color codes
-							groupPrefix.replace('&', ChatColor.COLOR_CHAR);
+							groupPrefix = groupPrefix.replace('&', ChatColor.COLOR_CHAR);
 						}
 						displayName = ChatColor.RESET.toString() + groupPrefix + ChatColor.RESET.toString() + " ";
 					}

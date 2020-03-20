@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
+import discordBot.Bot;
 import discordBot.DiscordPlayer;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.Faction;
@@ -373,10 +374,16 @@ public class FAdminCommands implements CommandExecutor {
 							sender.sendMessage("Invalid number of arguments.");
 						}
 					} else if (args[0].equals("unlink")) {
-						if (player.hasPermission("genericmc.admin.unlink")) {
+						if (player.hasPermission("genericmc.admin.unlink") && GenericPlugin.discord != null) {
 							if (args.length == 2) {
-								@SuppressWarnings("deprecation")
-								DiscordPlayer p = DiscordPlayer.getDiscordPlayer(GenericPlugin.getPlugin().getServer().getOfflinePlayer(args[1]));
+								DiscordPlayer p;
+								try {
+									p = DiscordPlayer
+											.getDiscordPlayer(Bot.jda.getUserByTag(args[1].replaceAll("@", "").trim()));
+								} catch (IllegalArgumentException e) {
+									sender.sendMessage("Player not recognized: " + args[1]);
+									return true;
+								}
 								if (p != null) {
 									p.getMCOfflinePlayer().setWhitelisted(false);
 									GenericPlugin.discPlayers.remove(p);
@@ -388,7 +395,7 @@ public class FAdminCommands implements CommandExecutor {
 									return true;
 								}
 							} else {
-								sender.sendMessage("Invalid number of arguments: /fadmin unlink <player>");
+								sender.sendMessage("Invalid number of arguments: /fadmin unlink <discordtag>");
 								return true;
 							}
 						} else {

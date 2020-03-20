@@ -160,12 +160,16 @@ public class FAdminTabCompleter implements TabCompleter {
 					} else if (args[0].equals("players")) {
 						return null;
 					} else if (args[0].equals("unlink")) {
-						if (args.length == 2) {
-							ArrayList<String> tabs = new ArrayList<String>();
-							for (DiscordPlayer p : GenericPlugin.discPlayers) {
-								tabs.add(p.getMCOfflinePlayer().getName());
+						if (player.hasPermission("genericmc.admin.unlink") && GenericPlugin.discord != null) {
+							if (args.length == 2) {
+								ArrayList<String> tabs = new ArrayList<String>();
+								for (DiscordPlayer p : GenericPlugin.discPlayers) {
+									tabs.add(p.getDiscordUser().getAsTag());
+								}
+								return keepStarts(tabs, args[args.length - 1]);
+							} else {
+								return null;
 							}
-							return keepStarts(tabs, args[args.length - 1]);
 						} else {
 							return null;
 						}
