@@ -46,8 +46,8 @@ public class Bot {
 		String token = GenericPlugin.config.getString("discord-token");
 		if (token != null && !token.equalsIgnoreCase("null")) {
 			try {
-				jda = JDABuilder.createDefault(token).setEventManager(new AnnotatedEventManager())
-						.addEventListeners(new Bot()).build();
+				jda = new JDABuilder(token).setEventManager(new AnnotatedEventManager()).addEventListeners(new Bot())
+						.build();
 				return true;
 			} catch (LoginException e) {
 				GenericPlugin.logger.log(Level.WARNING, "Invalid discord token. Disabling Discord integration.");
@@ -106,7 +106,7 @@ public class Bot {
 
 			// Correct players' roles
 			for (DiscordPlayer p : GenericPlugin.discPlayers) {
-				Member m = guild().retrieveMemberById(p.getDiscordID()).complete();
+				Member m = guild().getMemberById(p.getDiscordID());
 				if (m != null) { // Check the User is still in the guild
 					ArrayList<Role> roleToRemove = new ArrayList<Role>();
 					for (Role r : m.getRoles()) {
@@ -115,10 +115,10 @@ public class Bot {
 						}
 					}
 					for (Role r : roleToRemove) {
-						guild().removeRoleFromMember(p.getDiscordID(), r).queue();
+						guild().removeRoleFromMember(m, r).queue();
 					}
 					if (p.getFaction() != null && !m.getRoles().contains(factionRoles.get(p.getFaction())))
-						guild().addRoleToMember(p.getDiscordID(), factionRoles.get(p.getFaction())).queue();
+						guild().addRoleToMember(m, factionRoles.get(p.getFaction())).queue();
 				}
 			}
 		}
@@ -190,7 +190,8 @@ public class Bot {
 				} catch (IOException e) {
 					return;
 				} catch (NoSuchElementException e) {
-					channel.sendMessage("Minecraft account not recognized or something else went wrong: " + username).queue();
+					channel.sendMessage("Minecraft account not recognized or something else went wrong: " + username)
+							.queue();
 					return;
 				}
 				JsonObject json = new JsonParser().parse(jsonStr).getAsJsonObject();

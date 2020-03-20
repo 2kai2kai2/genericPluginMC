@@ -105,6 +105,8 @@ public class GenericPlugin extends JavaPlugin {
 		config = this.getConfig();
 		config.addDefault("allow-wars", true);
 		config.addDefault("allow-faction-map", true);
+		config.addDefault("chat-include-group", true);
+		config.addDefault("discord-token", "null");
 		config.options().copyDefaults(true);
 		this.saveDefaultConfig();
 
@@ -318,21 +320,21 @@ public class GenericPlugin extends JavaPlugin {
 			}
 		}
 	}
-	
+
 	public static void saveDiscord() {
 		ArrayList<Map<String, Object>> playerMaps = new ArrayList<Map<String, Object>>();
 		for (DiscordPlayer player : discPlayers) {
 			playerMaps.add(player.serialize());
 		}
 		discord.set("players", playerMaps);
-		
+
 		try {
 			discord.save(new File(getPlugin().getDataFolder(), "discord.yml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void loadDiscord() {
 		@SuppressWarnings("unchecked")
 		ArrayList<Map<String, Object>> playerMaps = (ArrayList<Map<String, Object>>) discord.get("players");
