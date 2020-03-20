@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import adminManager.Devrequest;
 import genericPluginMC.GenericPlugin;
+import factionsManager.dataTypes.RolePerms;
 
 public class ClaimCommands implements CommandExecutor {
 

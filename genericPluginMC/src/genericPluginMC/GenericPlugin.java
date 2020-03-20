@@ -33,6 +33,7 @@ import diplomacy.JoinRequestMail;
 import diplomacy.PeaceOfferMail;
 import diplomacy.War;
 import discordBot.Bot;
+import discordBot.DiscordPlayer;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.ClaimCommands;
 import factionsManager.dataTypes.ClaimTabCompleter;
@@ -49,12 +50,14 @@ public class GenericPlugin extends JavaPlugin {
 
 	public static FileConfiguration config;
 	public static FileConfiguration data;
+	public static FileConfiguration discord;
 
 	public static ArrayList<Faction> factions;
 	public static ArrayList<War> wars;
 	public static ArrayList<DiploMail> mail;
 	public static ArrayList<Devrequest> devrequests;
 	public static ArrayList<Player> claimOverrides;
+	public static ArrayList<DiscordPlayer> discPlayers;
 
 	public static HashMap<Player, Location> adminSpecLocs;
 
@@ -95,7 +98,7 @@ public class GenericPlugin extends JavaPlugin {
 		claimOverrides = new ArrayList<Player>();
 
 		adminSpecLocs = new HashMap<Player, Location>();
-		
+
 		logger = this.getLogger();
 
 		// Configs
@@ -125,9 +128,14 @@ public class GenericPlugin extends JavaPlugin {
 		// Setup admin faction if doesn't exist
 		if (GenericPlugin.factionFromName("admin") == null)
 			factions.add(Faction.generateAdminFaction());
-		
+
 		// Discord
-		Bot.init();
+		if (Bot.init()) {
+			this.saveResource("discord.yml", false);
+			discord = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "discord.yml"));
+			discPlayers = new ArrayList<DiscordPlayer>();
+			loadDiscord();
+		}
 	}
 
 	@Override
@@ -137,6 +145,8 @@ public class GenericPlugin extends JavaPlugin {
 			set.getKey().teleport(set.getValue());
 			set.getKey().setGameMode(GameMode.SURVIVAL);
 		}
+		if (discord != null)
+			GenericPlugin.saveDiscord();
 	}
 
 	public static JavaPlugin getPlugin() {
@@ -305,6 +315,30 @@ public class GenericPlugin extends JavaPlugin {
 		if (devMaps != null) {
 			for (Map<String, Object> map : devMaps) {
 				devrequests.add(new Devrequest(map));
+			}
+		}
+	}
+	
+	public static void saveDiscord() {
+		ArrayList<Map<String, Object>> playerMaps = new ArrayList<Map<String, Object>>();
+		for (DiscordPlayer player : discPlayers) {
+			playerMaps.add(player.serialize());
+		}
+		discord.set("players", playerMaps);
+		
+		try {
+			discord.save(new File(getPlugin().getDataFolder(), "discord.yml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void loadDiscord() {
+		@SuppressWarnings("unchecked")
+		ArrayList<Map<String, Object>> playerMaps = (ArrayList<Map<String, Object>>) discord.get("players");
+		if (playerMaps != null) {
+			for (Map<String, Object> map : playerMaps) {
+				discPlayers.add(new DiscordPlayer(map));
 			}
 		}
 	}

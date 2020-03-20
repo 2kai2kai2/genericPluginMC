@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import discordBot.Bot;
 import factionsManager.dataTypes.Faction;
 import genericPluginMC.GenericPlugin;
 
@@ -50,6 +51,8 @@ public class JoinRequestMail extends DiploMail {
 				GenericPlugin.mail.remove(i);
 		}
 		GenericPlugin.saveData(GenericPlugin.getPlugin());
+		GenericPlugin.updateDisplayNames();
+		Bot.updateFactionRoles();
 	}
 
 	public void reject() {

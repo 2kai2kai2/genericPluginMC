@@ -1,5 +1,6 @@
 package factionsManager.dataTypes;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -233,6 +234,42 @@ public class Faction implements ConfigurationSerializable {
 
 	public ChatColor getColor() {
 		return color;
+	}
+
+	public Color getRGBColor() {
+		if (getColor().equals(ChatColor.BLACK)) {
+			return new Color(0, 0, 0);
+		} else if (getColor().equals(ChatColor.DARK_BLUE)) {
+			return new Color(0, 0, 170);
+		} else if (getColor().equals(ChatColor.DARK_GREEN)) {
+			return new Color(0, 170, 0);
+		} else if (getColor().equals(ChatColor.DARK_AQUA)) {
+			return new Color(0, 170, 170);
+		} else if (getColor().equals(ChatColor.DARK_RED)) {
+			return new Color(170, 0, 0);
+		} else if (getColor().equals(ChatColor.DARK_PURPLE)) {
+			return new Color(170, 0, 170);
+		} else if (getColor().equals(ChatColor.GOLD)) {
+			return new Color(255, 170, 0);
+		} else if (getColor().equals(ChatColor.GRAY)) {
+			return new Color(170, 170, 170);
+		} else if (getColor().equals(ChatColor.DARK_GRAY)) {
+			return new Color(85, 85, 85);
+		} else if (getColor().equals(ChatColor.BLUE)) {
+			return new Color(85, 85, 255);
+		} else if (getColor().equals(ChatColor.GREEN)) {
+			return new Color(85, 255, 85);
+		} else if (getColor().equals(ChatColor.AQUA)) {
+			return new Color(85, 255, 255);
+		} else if (getColor().equals(ChatColor.RED)) {
+			return new Color(255, 85, 85);
+		} else if (getColor().equals(ChatColor.LIGHT_PURPLE)) {
+			return new Color(255, 85, 255);
+		} else if (getColor().equals(ChatColor.YELLOW)) {
+			return new Color(255, 255, 85);
+		} else {
+			return new Color(255, 255, 255);
+		}
 	}
 
 	public void setColor(ChatColor color) {

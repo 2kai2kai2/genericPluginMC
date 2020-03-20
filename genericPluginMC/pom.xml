@@ -25,35 +25,35 @@
 				</configuration>
 			</plugin>
 			<plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-assembly-plugin</artifactId>
-	            <executions>
-	                <execution>
-	                    <id>create-my-bundle</id>
-	                    <phase>package</phase>
-	                    <goals>
-	                        <goal>single</goal>
-	                    </goals>
-	                    <configuration>
-	                        <descriptorRefs>
-	                            <descriptorRef>jar-with-dependencies</descriptorRef>
-	                        </descriptorRefs>
-	                        <archive>
-	                            <manifest>
-	                                <mainClass>res.application.Main</mainClass> <!-- Or wherever is your main method-->
-	                            </manifest>
-	                        </archive>
-	                    </configuration>
-	                </execution>
-            	</executions>
-        	</plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-my-bundle</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>res.application.Main</mainClass> <!-- Or wherever is your main method -->
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
 		<repository>
-        	<id>spigot-repo</id>
-        	<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-    	</repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
@@ -65,20 +65,25 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>jcenter</id>
+			<name>jcenter-bintray</name>
+			<url>https://jcenter.bintray.com</url>
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
-           <groupId>org.spigotmc</groupId>
-           <artifactId>spigot-api</artifactId>
-           <version>1.15.2-R0.1-SNAPSHOT</version>
-           <scope>provided</scope>
-    	</dependency>
-    	<dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-    	</dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.15.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.15.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.github.MilkBowl</groupId>
 			<artifactId>VaultAPI</artifactId>
@@ -86,9 +91,14 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.discord4j</groupId>
-			<artifactId>discord4j-core</artifactId>
-			<version>3.0.12</version>
+			<groupId>net.dv8tion</groupId>
+			<artifactId>JDA</artifactId>
+			<version>4.1.1_122</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		    <version>2.8.5</version>
 		</dependency>
 	</dependencies>
 </project>

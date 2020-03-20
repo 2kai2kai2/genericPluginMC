@@ -22,7 +22,7 @@ commands:
   fadmin:
     description: All administrative controls on faction-related things.
     usage: "Usage: /<command> <devrequests|claimoverride|spectp|claim|help>"
-    default: op
+    default: true
     alias: factionadmin
 permissions:
   genericmc.admin.setdev:
@@ -37,6 +37,9 @@ permissions:
   genericmc.admin.claim:
     description: Gives access to fadmin claim commands
     default: op
+  genericmc.admin.unlink:
+    description: Gives access to /fadmin unlink
+    default: op
   genericmc.admin.*:
     description: Gives access to all fadmin commands
     default: op
@@ -45,3 +48,4 @@ permissions:
       genericmc.admin.claimoverride: true
       genericmc.admin.spectp: true
       genericmc.admin.claim: true
+      genericmc.admin.unlink: true

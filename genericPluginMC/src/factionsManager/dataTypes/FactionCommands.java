@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.MapMeta;
 import diplomacy.DiploMail;
 import diplomacy.JoinRequestMail;
 import diplomacy.War;
+import discordBot.Bot;
 import genericPluginMC.Events;
 import genericPluginMC.GenericPlugin;
 
@@ -77,6 +78,7 @@ public class FactionCommands implements CommandExecutor {
 
 							GenericPlugin.saveData(GenericPlugin.getPlugin());
 							sender.sendMessage("Created new faction: " + factionName);
+							Bot.updateFactionRoles();
 							return true;
 						}
 					} else if (args[0].equals("join")) {
@@ -145,9 +147,16 @@ public class FactionCommands implements CommandExecutor {
 										if (GenericPlugin.mail.get(i).getRecipient() == faction)
 											GenericPlugin.mail.remove(i);
 									}
+
+									// Remove any devrequests for this faction
+									for (int i = GenericPlugin.devrequests.size() - 1; i >= 0; i--) {
+										if (GenericPlugin.devrequests.get(i).getClaim().getOwner() == faction)
+											GenericPlugin.devrequests.remove(i);
+									}
 								}
 								GenericPlugin.saveData(GenericPlugin.getPlugin());
 								GenericPlugin.updateDisplayNames();
+								Bot.updateFactionRoles();
 								return true;
 							} else {
 								sender.sendMessage("You cannot leave a faction if you are not in one.");
@@ -214,6 +223,7 @@ public class FactionCommands implements CommandExecutor {
 									sender.sendMessage("Changed faction color to " + color.name().toLowerCase());
 									GenericPlugin.updateDisplayNames();
 									GenericPlugin.saveData(GenericPlugin.getPlugin());
+									Bot.updateFactionRoles();
 									return true;
 								} else {
 									sender.sendMessage("Invalid number of arguments.");

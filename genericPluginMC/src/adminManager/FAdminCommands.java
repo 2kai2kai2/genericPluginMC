@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
+import discordBot.DiscordPlayer;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.Faction;
 import genericPluginMC.GenericPlugin;
@@ -342,6 +343,56 @@ public class FAdminCommands implements CommandExecutor {
 							}
 						} else {
 							sender.sendMessage("Please specify an action to take for admin claims.");
+							return true;
+						}
+					} else if (args[0].equals("players")) {
+						if (args.length == 1) {
+							sender.sendMessage(ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString()
+									+ "======ONLINE PLAYERS======");
+							for (Player p : GenericPlugin.getPlugin().getServer().getOnlinePlayers()) {
+								String message = p.getName() + " | Display Name: " + p.getDisplayName()
+										+ " | Discord: ";
+								DiscordPlayer discPlayer = DiscordPlayer.getDiscordPlayer(p);
+								if (discPlayer != null) {
+									message += discPlayer.getDiscordUser().getAsTag();
+								} else {
+									message += "UNKNOWN";
+								}
+								sender.sendMessage(message);
+							}
+						} /*
+							 * else if (args.length == 2) {
+							 * 
+							 * @SuppressWarnings("deprecation") OfflinePlayer p =
+							 * GenericPlugin.getPlugin().getServer().getOfflinePlayer(args[1]); String
+							 * message = p.getName() + " | Display Name: " + p.getDisplayName() +
+							 * " | Discord: "; DiscordPlayer discPlayer = DiscordPlayer.getDiscordPlayer(p);
+							 * if (discPlayer != null) { message += discPlayer.getDiscordUser().getAsTag();
+							 * } else { message += "UNKNOWN"; } sender.sendMessage(message); }
+							 */ else {
+							sender.sendMessage("Invalid number of arguments.");
+						}
+					} else if (args[0].equals("unlink")) {
+						if (player.hasPermission("genericmc.admin.unlink")) {
+							if (args.length == 2) {
+								@SuppressWarnings("deprecation")
+								DiscordPlayer p = DiscordPlayer.getDiscordPlayer(GenericPlugin.getPlugin().getServer().getOfflinePlayer(args[1]));
+								if (p != null) {
+									p.getMCOfflinePlayer().setWhitelisted(false);
+									GenericPlugin.discPlayers.remove(p);
+									GenericPlugin.saveDiscord();
+									sender.sendMessage("Player unlinked and removed from whitelist.");
+									return true;
+								} else {
+									sender.sendMessage("Player not recognized: " + args[1]);
+									return true;
+								}
+							} else {
+								sender.sendMessage("Invalid number of arguments: /fadmin unlink <player>");
+								return true;
+							}
+						} else {
+							sender.sendMessage(command.getPermissionMessage());
 							return true;
 						}
 					} else {

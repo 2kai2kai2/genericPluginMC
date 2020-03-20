@@ -9,6 +9,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
+import discordBot.DiscordPlayer;
 import factionsManager.dataTypes.Claim;
 import factionsManager.dataTypes.Faction;
 import genericPluginMC.GenericPlugin;
@@ -52,6 +53,9 @@ public class FAdminTabCompleter implements TabCompleter {
 					if (player.hasPermission("genericmc.admin.claim")) {
 						tabs.add("claim");
 					}
+					tabs.add("players");
+					if (player.hasPermission("genericmc.admin.unlink"))
+						tabs.add("unlink");
 					tabs.add("help");
 					return keepStarts(tabs, args[args.length - 1]); // Doesn't have any arguments
 				} else {
@@ -150,6 +154,18 @@ public class FAdminTabCompleter implements TabCompleter {
 									return null;
 								}
 							}
+						} else {
+							return null;
+						}
+					} else if (args[0].equals("players")) {
+						return null;
+					} else if (args[0].equals("unlink")) {
+						if (args.length == 2) {
+							ArrayList<String> tabs = new ArrayList<String>();
+							for (DiscordPlayer p : GenericPlugin.discPlayers) {
+								tabs.add(p.getMCOfflinePlayer().getName());
+							}
+							return keepStarts(tabs, args[args.length - 1]);
 						} else {
 							return null;
 						}
