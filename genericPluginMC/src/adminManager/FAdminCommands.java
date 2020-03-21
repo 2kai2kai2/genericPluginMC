@@ -361,6 +361,7 @@ public class FAdminCommands implements CommandExecutor {
 								}
 								sender.sendMessage(message);
 							}
+							return true;
 						} /*
 							 * else if (args.length == 2) {
 							 * 
@@ -370,8 +371,10 @@ public class FAdminCommands implements CommandExecutor {
 							 * " | Discord: "; DiscordPlayer discPlayer = DiscordPlayer.getDiscordPlayer(p);
 							 * if (discPlayer != null) { message += discPlayer.getDiscordUser().getAsTag();
 							 * } else { message += "UNKNOWN"; } sender.sendMessage(message); }
-							 */ else {
+							 */ 
+						else {
 							sender.sendMessage("Invalid number of arguments.");
+							return true;
 						}
 					} else if (args[0].equals("unlink")) {
 						if (player.hasPermission("genericmc.admin.unlink") && GenericPlugin.discord != null) {

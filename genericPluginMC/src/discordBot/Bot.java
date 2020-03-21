@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 import javax.security.auth.login.LoginException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import com.google.gson.JsonObject;
@@ -110,7 +111,8 @@ public class Bot {
 				if (m != null) { // Check the User is still in the guild
 					ArrayList<Role> roleToRemove = new ArrayList<Role>();
 					for (Role r : m.getRoles()) {
-						if (factionRoles.containsValue(r) && !factionRoles.get(p.getFaction()).equals(r)) {
+						if (factionRoles.containsValue(r)
+								&& (p.getFaction() == null || !factionRoles.get(p.getFaction()).equals(r))) {
 							roleToRemove.add(r);
 						}
 					}
@@ -216,9 +218,14 @@ public class Bot {
 					} else { // This means neither is linked
 						GenericPlugin.discPlayers
 								.add(new DiscordPlayer(event.getAuthor().getIdLong(), player.getUniqueId()));
-						channel.sendMessage("Linked accounts: " + event.getAuthor().getAsMention() + " and "
-								+ json.get("name").getAsString()).queue();
-						player.setWhitelisted(true);
+						String mojangUsername = json.get("name").getAsString();
+						channel.sendMessage(
+								"Linked accounts: " + event.getAuthor().getAsMention() + " and " + mojangUsername)
+								.queue();
+						Bukkit.getScheduler().callSyncMethod(GenericPlugin.getPlugin(),
+								() -> GenericPlugin.getPlugin().getServer().dispatchCommand(
+										GenericPlugin.getPlugin().getServer().getConsoleSender(),
+										"whitelist add " + mojangUsername));
 						GenericPlugin.saveDiscord();
 						updateFactionRoles();
 					}
