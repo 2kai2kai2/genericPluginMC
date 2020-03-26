@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +22,7 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
 
+import adminManager.SpecTP;
 import diplomacy.DiploMail;
 import diplomacy.DiploNotificationMail;
 import factionsManager.dataTypes.Claim;
@@ -64,10 +64,10 @@ public class Events implements Listener {
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		if (GenericPlugin.claimOverrides.contains(event.getPlayer()))
 			GenericPlugin.claimOverrides.remove(event.getPlayer());
-		if (GenericPlugin.adminSpecLocs.containsKey(event.getPlayer())) {
-			event.getPlayer().teleport(GenericPlugin.adminSpecLocs.get(event.getPlayer()));
-			event.getPlayer().setGameMode(GameMode.SPECTATOR);
-			GenericPlugin.adminSpecLocs.remove(event.getPlayer());
+		for (SpecTP spec : GenericPlugin.adminSpecLocs) {
+			if (spec.getPlayer() == event.getPlayer()) {
+				spec.end();
+			}
 		}
 		event.setQuitMessage(event.getPlayer().getDisplayName() + " left the game.");
 	}

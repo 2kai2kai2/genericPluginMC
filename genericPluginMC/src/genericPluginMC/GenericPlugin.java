@@ -3,15 +3,12 @@ package genericPluginMC;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import adminManager.Devrequest;
 import adminManager.FAdminCommands;
 import adminManager.FAdminTabCompleter;
+import adminManager.SpecTP;
 import diplomacy.AllyOfferMail;
 import diplomacy.DiploCommands;
 import diplomacy.DiploMail;
@@ -59,7 +57,7 @@ public class GenericPlugin extends JavaPlugin {
 	public static ArrayList<Player> claimOverrides;
 	public static ArrayList<DiscordPlayer> discPlayers;
 
-	public static HashMap<Player, Location> adminSpecLocs;
+	public static ArrayList<SpecTP> adminSpecLocs;
 
 	public static Economy econ = null;
 	public static Permission perms = null;
@@ -97,7 +95,7 @@ public class GenericPlugin extends JavaPlugin {
 		devrequests = new ArrayList<Devrequest>();
 		claimOverrides = new ArrayList<Player>();
 
-		adminSpecLocs = new HashMap<Player, Location>();
+		adminSpecLocs = new ArrayList<SpecTP>();
 
 		logger = this.getLogger();
 
@@ -143,9 +141,8 @@ public class GenericPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		saveData(getPlugin());
-		for (Entry<Player, Location> set : adminSpecLocs.entrySet()) {
-			set.getKey().teleport(set.getValue());
-			set.getKey().setGameMode(GameMode.SURVIVAL);
+		for (SpecTP spec : adminSpecLocs) {
+			spec.end();
 		}
 		if (discord != null)
 			GenericPlugin.saveDiscord();

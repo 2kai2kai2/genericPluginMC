@@ -193,16 +193,16 @@ public class FAdminCommands implements CommandExecutor {
 						if (player.hasPermission("genericmc.admin.spectp")) {
 							if (args.length == 1) {
 								// This is just for canceling and returning to the previous location
-								if (GenericPlugin.adminSpecLocs.containsKey(player)) {
-									player.teleport(GenericPlugin.adminSpecLocs.get(player));
-									player.setGameMode(GameMode.SURVIVAL);
-									sender.sendMessage("Teleported back to previous location.");
-									return true;
-								} else {
-									sender.sendMessage(
-											"You are not currently observing so cannot return to a previous location.");
-									return true;
+								for (SpecTP spec : GenericPlugin.adminSpecLocs) {
+									if (spec.getPlayer() == player) {
+										spec.end();
+										sender.sendMessage("Teleported back to previous location.");
+										return true;
+									}
 								}
+								sender.sendMessage(
+										"You are not currently observing so cannot return to a previous location.");
+								return true;
 							} else if (args.length >= 2) {
 								Claim claim = null;
 								if (args.length == 2) {
@@ -245,14 +245,22 @@ public class FAdminCommands implements CommandExecutor {
 								}
 
 								// Add the location to go back to if they aren't already observing
-								if (!GenericPlugin.adminSpecLocs.containsKey(player)) {
-									GenericPlugin.adminSpecLocs.put(player, player.getLocation());
+								boolean alreadySpectating = false;
+								for (SpecTP spec : GenericPlugin.adminSpecLocs) {
+									if (spec.getPlayer() == player) {
+										alreadySpectating = true;
+										break;
+									}
+								}
+								if (!alreadySpectating) {
+									GenericPlugin.adminSpecLocs
+											.add(new SpecTP(player, player.getLocation(), player.getGameMode()));
 								}
 
 								player.setGameMode(GameMode.SPECTATOR);
 								player.teleport(claim.getChunks().get(0).getBlock(0, 128, 0).getLocation());
 								sender.sendMessage("Now observing: " + claim.getName()
-										+ ". Use \"/fadmin spectp\" to return to your survival location.");
+										+ ". Use \"/fadmin spectp\" to return to your previous location and gamemode.");
 								return true;
 							}
 						} else {
@@ -371,7 +379,7 @@ public class FAdminCommands implements CommandExecutor {
 							 * " | Discord: "; DiscordPlayer discPlayer = DiscordPlayer.getDiscordPlayer(p);
 							 * if (discPlayer != null) { message += discPlayer.getDiscordUser().getAsTag();
 							 * } else { message += "UNKNOWN"; } sender.sendMessage(message); }
-							 */ 
+							 */
 						else {
 							sender.sendMessage("Invalid number of arguments.");
 							return true;
