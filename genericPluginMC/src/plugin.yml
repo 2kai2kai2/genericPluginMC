@@ -1,6 +1,6 @@
 name: GenericPlugin
 main: genericPluginMC.GenericPlugin
-version: 1.2.2
+version: 1.2.3
 api-version: 1.15
 author: 2kai2kai2
 prefix: GenericMC
@@ -25,6 +25,23 @@ commands:
     default: true
     alias: factionadmin
 permissions:
+  genericmc.faction.create:
+    description: Allows players to create a faction. Includes ability to join factions.
+    default: op
+    children:
+      genericmc.faction.join: true
+  genericmc.faction.join:
+    description: Allows players to join a faction
+    default: op
+  genericmc.faction.*:
+    description: Gives access to all faction commands
+    default: op
+    children:
+      genericmc.faction.create: true
+      genericmc.faction.join: true
+  genericmc.claim:
+    description: Allows players to claim land
+    default: op
   genericmc.admin.setdev:
     description: Gives access to fadmin dev-related commands
     default: op

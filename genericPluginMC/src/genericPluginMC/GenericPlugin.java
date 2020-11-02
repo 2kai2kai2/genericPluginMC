@@ -141,8 +141,8 @@ public class GenericPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		saveData(getPlugin());
-		for (SpecTP spec : adminSpecLocs) {
-			spec.end();
+		for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+			SpecTP.endForPlayer(p);
 		}
 		if (discord != null)
 			GenericPlugin.saveDiscord();

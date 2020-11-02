@@ -36,87 +36,98 @@ public class FactionCommands implements CommandExecutor {
 					return false; // Doesn't have any arguments
 				} else {
 					if (args[0].equals("create")) {
-						if (args.length > 1) { // This is good, the rest of the arguments will be turned into the
-												// multi-word faction name
+						if (player.hasPermission("genericmc.faction.create")) {
+							if (args.length > 1) { // This is good, the rest of the arguments will be turned into the
+													// multi-word faction name
 
-							// Check if the player is already in a faction
-							if (GenericPlugin.getPlayerFaction(player) != null) {
-								sender.sendMessage("You cannot be in a faction if you want to create a new one.");
-								return true;
-							}
-
-							// Get the name of this new faction
-							String factionName = "";
-							for (int i = 1; i < args.length; i++) {
-								if (i != 1)
-									factionName += " ";
-								factionName += args[i];
-							}
-
-							// Check that this name is not already taken
-							for (Faction f : GenericPlugin.factions) {
-								if (f.getName().equalsIgnoreCase(factionName)
-										|| factionName.equalsIgnoreCase("admin")) {
-									sender.sendMessage("The name \"" + factionName
-											+ "\" is already taken. Please choose another.");
+								// Check if the player is already in a faction
+								if (GenericPlugin.getPlayerFaction(player) != null) {
+									sender.sendMessage("You cannot be in a faction if you want to create a new one.");
 									return true;
 								}
+
+								// Get the name of this new faction
+								String factionName = "";
+								for (int i = 1; i < args.length; i++) {
+									if (i != 1)
+										factionName += " ";
+									factionName += args[i];
+								}
+
+								// Check that this name is not already taken
+								for (Faction f : GenericPlugin.factions) {
+									if (f.getName().equalsIgnoreCase(factionName)
+											|| factionName.equalsIgnoreCase("admin")) {
+										sender.sendMessage("The name \"" + factionName
+												+ "\" is already taken. Please choose another.");
+										return true;
+									}
+								}
+
+								// TODO: any other checks?
+
+								Faction faction = new Faction(((HumanEntity) sender).getUniqueId(), factionName);
+								GenericPlugin.factions.add(faction);
+								GenericPlugin.updateDisplayNames();
+								// Delete any other faction join requests
+								for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
+									DiploMail mail = GenericPlugin.mail.get(i);
+									if (mail instanceof JoinRequestMail
+											&& ((JoinRequestMail) mail).getPlayer().equals(player.getUniqueId()))
+										GenericPlugin.mail.remove(i);
+								}
+
+								GenericPlugin.saveData(GenericPlugin.getPlugin());
+								sender.sendMessage("Created new faction: " + factionName);
+								Bot.updateFactionRoles();
+								return true;
 							}
-
-							// TODO: any other checks?
-
-							Faction faction = new Faction(((HumanEntity) sender).getUniqueId(), factionName);
-							GenericPlugin.factions.add(faction);
-							GenericPlugin.updateDisplayNames();
-							// Delete any other faction join requests
-							for (int i = GenericPlugin.mail.size() - 1; i >= 0; i--) {
-								DiploMail mail = GenericPlugin.mail.get(i);
-								if (mail instanceof JoinRequestMail
-										&& ((JoinRequestMail) mail).getPlayer().equals(player.getUniqueId()))
-									GenericPlugin.mail.remove(i);
-							}
-
-							GenericPlugin.saveData(GenericPlugin.getPlugin());
-							sender.sendMessage("Created new faction: " + factionName);
-							Bot.updateFactionRoles();
+						} else {
+							sender.sendMessage("You do not have permission to create factions.");
 							return true;
 						}
 					} else if (args[0].equals("join")) {
-						if (args.length > 1) {
-							// Check if the player is already in a faction
-							if (GenericPlugin.getPlayerFaction(player) != null) {
-								sender.sendMessage("You cannot be in a faction if you want to join a different one.");
-								return true;
-							}
-
-							// Get the name of the faction to join
-							String factionName = "";
-							for (int i = 1; i < args.length; i++) {
-								if (i != 1)
-									factionName += " ";
-								factionName += args[i];
-							}
-
-							if (factionName.equalsIgnoreCase("admin")) {
-								sender.sendMessage("The admin faction cannot be joined.");
-							}
-
-							for (Faction f : GenericPlugin.factions) {
-								if (f.getName().equalsIgnoreCase(factionName)) {
-									sender.sendMessage("Sent request to join faction: " + f.getName());
-									GenericPlugin.mail.add(new JoinRequestMail(
-											player.getDisplayName() + " request to join " + f.getName(),
-											player.getUniqueId(), f));
-									GenericPlugin.saveData(GenericPlugin.getPlugin());
-									GenericPlugin.updateDisplayNames();
+						if (player.hasPermission("genericmc.faction.join")) {
+							if (args.length > 1) {
+								// Check if the player is already in a faction
+								if (GenericPlugin.getPlayerFaction(player) != null) {
+									sender.sendMessage(
+											"You cannot be in a faction if you want to join a different one.");
 									return true;
 								}
+
+								// Get the name of the faction to join
+								String factionName = "";
+								for (int i = 1; i < args.length; i++) {
+									if (i != 1)
+										factionName += " ";
+									factionName += args[i];
+								}
+
+								if (factionName.equalsIgnoreCase("admin")) {
+									sender.sendMessage("The admin faction cannot be joined.");
+								}
+
+								for (Faction f : GenericPlugin.factions) {
+									if (f.getName().equalsIgnoreCase(factionName)) {
+										sender.sendMessage("Sent request to join faction: " + f.getName());
+										GenericPlugin.mail.add(new JoinRequestMail(
+												player.getDisplayName() + " request to join " + f.getName(),
+												player.getUniqueId(), f));
+										GenericPlugin.saveData(GenericPlugin.getPlugin());
+										GenericPlugin.updateDisplayNames();
+										return true;
+									}
+								}
+								// This means that the faction wasn't recognized
+								sender.sendMessage("The faction \"" + factionName + "\" was not recognized.");
+								return true;
+							} else {
+								sender.sendMessage("Please specify the faction to join.");
+								return true;
 							}
-							// This means that the faction wasn't recognized
-							sender.sendMessage("The faction \"" + factionName + "\" was not recognized.");
-							return true;
 						} else {
-							sender.sendMessage("Please specify the faction to join.");
+							sender.sendMessage("You do not have permission to join factions.");
 							return true;
 						}
 					} else if (args[0].equals("leave")) {

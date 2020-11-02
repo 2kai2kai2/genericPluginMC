@@ -64,11 +64,7 @@ public class Events implements Listener {
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		if (GenericPlugin.claimOverrides.contains(event.getPlayer()))
 			GenericPlugin.claimOverrides.remove(event.getPlayer());
-		for (SpecTP spec : GenericPlugin.adminSpecLocs) {
-			if (spec.getPlayer() == event.getPlayer()) {
-				spec.end();
-			}
-		}
+		SpecTP.endForPlayer(event.getPlayer());
 		event.setQuitMessage(event.getPlayer().getDisplayName() + " left the game.");
 	}
 

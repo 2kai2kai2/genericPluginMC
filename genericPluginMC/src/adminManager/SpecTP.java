@@ -38,4 +38,14 @@ public class SpecTP {
 			return false;
 		}
 	}
+	
+	public static boolean endForPlayer(Player player) {
+		for (int i = GenericPlugin.adminSpecLocs.size() - 1; i >= 0; i--) {
+			SpecTP spec = GenericPlugin.adminSpecLocs.get(i);
+			if (spec.getPlayer() == player) {
+				return spec.end();
+			}
+		}
+		return false;
+	}
 }

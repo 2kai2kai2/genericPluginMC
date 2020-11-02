@@ -193,16 +193,14 @@ public class FAdminCommands implements CommandExecutor {
 						if (player.hasPermission("genericmc.admin.spectp")) {
 							if (args.length == 1) {
 								// This is just for canceling and returning to the previous location
-								for (SpecTP spec : GenericPlugin.adminSpecLocs) {
-									if (spec.getPlayer() == player) {
-										spec.end();
-										sender.sendMessage("Teleported back to previous location.");
-										return true;
-									}
+								if (SpecTP.endForPlayer(player)) {
+									sender.sendMessage("Returned to previous location and gamemode.");
+									return true;
+								} else {
+									sender.sendMessage(
+											"You are not currently observing so cannot return to a previous location.");
+									return true;
 								}
-								sender.sendMessage(
-										"You are not currently observing so cannot return to a previous location.");
-								return true;
 							} else if (args.length >= 2) {
 								Claim claim = null;
 								if (args.length == 2) {
